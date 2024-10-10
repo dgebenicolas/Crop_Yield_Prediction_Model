@@ -1,0 +1,1 @@
+{"objective": "regression", "metric": "mae", "boosting_type": "gbdt", "seed": 1979, "verbose": -1, "reg_alpha": 4.815214102547939, "reg_lambda": 8.07499102611939, "colsample_bytree": 0.9646734571922433, "subsample": 0.697776695301108, "learning_rate": 0.07476161437471936, "max_depth": 15, "num_leaves": 29, "cat_smooth": 33, "num_iterations": 1000}
