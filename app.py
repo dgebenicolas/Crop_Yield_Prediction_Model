@@ -52,49 +52,91 @@ df_main = pd.read_csv(r'new_ml_data.csv')
 
 def main():
     st.title('Yield Crop Prediction')
-    html_temp='''
+    html_temp = '''
     <div style='background-color:red; padding:12px'>
-    <h1 style='color:  #000000; text-align: center;'>Yield Crop Prediction Machine Learning Model</h1>
+    <h1 style='color: #000000; text-align: center;'>Yield Crop Prediction Machine Learning Model</h1>
     </div>
-    <h2 style='color:  red; text-align: center;'>Please Enter Input</h2>
     '''
-    st.markdown(html_temp,unsafe_allow_html=True)
-    farm= st.selectbox("Type or Select a Farm_ID.",df_main['Подразделение'].unique()) 
-    field= st.selectbox("Type or Select a Field_ID",df_main['Поле'].unique())
-    Max_NDVI=st.number_input('Enter Max_NDVI May(MAX_NDVI).',value=None)
-    July_NDVI=st.number_input('Enter July NDVI (7_NDVI).',value=None)
-    relative_humidity_June=st.number_input('Enter Relative Humidity May(6_relative_humidity).',value=None)
-    relative_humidity_July=st.number_input('Enter Relative Humidity July (7_relative_humidity).',value=None)
-    min_temperature_July = st.number_input('Minimum Temperature July (7_temperature_2m_min).',value=None)
-    total_rainfall_May=st.number_input('Enter Total Rainfall May(5_total_precipitation_sum).',value=None)
-    total_rainfall_July=st.number_input('Enter Total Rainfall July (7_total_precipitation_sum).',value=None)
-    wind_speed_May = st.number_input('Enter Wind Speed May (5_v_component_of_wind_10m).',value=None)
-    VPD_May = st.number_input('Enter VPD May (5_vapor_pressure_deficit).',value=None)
-    VPD_June = st.number_input('Enter VPD June (6_vapor_pressure_deficit).',value=None)
-    sowing_date = st.number_input('Enter Sowing Date (DOY_min).',value=None)
-    cec = st.number_input('Enter Cec (cec).',value=None)
-    clay = st.number_input('Enter Clay (clay).',value=None)
-    sand = st.number_input('Enter Sand (sand).',value=None)
-    silt = st.number_input('Enter Silt (silt).',value=None)
-    NDVI_197 = st.number_input('Enter 2nd Week of July NDVI (193_NDVI)',value=None)
-    NDVI_201 = st.number_input('Enter 3rd Week of July NDVI (201_NDVI).',value=None)
-    NDVI_209 = st.number_input('Enter 4th Week of July NDVI (209_NDVI).',value=None)
-    agrofon= st.selectbox("Type or Select a Field_ID",df_main['Агрофон'].unique())
-        # Collect user inputs into a horizontal list for predictions
-    input = [farm, field, Max_NDVI, July_NDVI, relative_humidity_June, relative_humidity_July, 
-             min_temperature_July, total_rainfall_May, total_rainfall_July, wind_speed_May, 
-             VPD_May, VPD_June, sowing_date, cec, clay, sand, silt, NDVI_197, NDVI_201, 
-             NDVI_209, agrofon]
+    st.markdown(html_temp, unsafe_allow_html=True)
+    
+    # Explanation for users
+    st.markdown("""
+    ### How to Use:
+    1. Paste your list of values in the text area below
+    2. The list should contain 19 numeric values in the following order:
+        - MAX_NDVI, 7_NDVI, 6_relative_humidity, 7_relative_humidity, 7_temperature_2m_min
+        - 5_total_precipitation_sum, 7_total_precipitation_sum, 5_v_component_of_wind_10m
+        - 5_vapor_pressure_deficit, 6_vapor_pressure_deficit, DOY_min, cec, clay, sand, silt
+        - 193_NDVI, 201_NDVI, 209_NDVI
+    3. Select the Agrofon value from the dropdown
+    4. Click 'Predict' to get your result!
+    """)
 
-    result=''
-    if st.button('Predict',''):
-        result=prediction(input)
-    temp='''
-     <div style='background-color:navy; padding:8px'>
-     <h1 style='color: gold  ; text-align: center;'>{}</h1>
-     </div>
-     '''.format(result)
-    st.markdown(temp,unsafe_allow_html=True)
+    # Example for users
+    st.markdown("""
+    #### Example input:
+    ```
+    0.76, 0.65, 70.5, 65.2, 15.3, 45.2, 50.1, 2.3, 0.8, 1.2, 125, 15.6, 25.3, 40.2, 34.5, 0.62, 0.58, 0.55
+    ```
+    """)
+
+    # Text area for list input
+    input_text = st.text_area("Enter your values (comma-separated):", height=100)
+    
+    # Dropdown for Agrofon
+    agrofon = st.selectbox("Select Agrofon:", df_main['Агрофон'].unique())
+    
+    # Process input when Predict button is clicked
+    if st.button('Predict'):
+        try:
+            # Parse input text to list
+            input_values = [float(x.strip()) for x in input_text.split(',') if x.strip()]
+            
+            if len(input_values) != 18:  # 18 because we're not counting farm and field IDs
+                st.error(f"Please enter exactly 18 values. You entered {len(input_values)} values.")
+                return
+            
+            # Add placeholder values for farm and field (indices 0 and 1)
+            full_input = ['placeholder', 'placeholder'] + input_values + [agrofon]
+            
+            result = prediction(full_input)
+            
+            # Display result
+            result_html = f'''
+            <div style='background-color:navy; padding:8px'>
+            <h1 style='color: gold; text-align: center;'>{result}</h1>
+            </div>
+            '''
+            st.markdown(result_html, unsafe_allow_html=True)
+            
+        except ValueError:
+            st.error("Please ensure all values are numbers and are correctly formatted (comma-separated).")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
+
+    # Add a section showing the expected order of variables
+    with st.expander("See detailed description of input values"):
+        st.markdown("""
+        ### Expected order of values:
+        1. MAX_NDVI (May)
+        2. July NDVI (7_NDVI)
+        3. Relative Humidity June (6_relative_humidity)
+        4. Relative Humidity July (7_relative_humidity)
+        5. Minimum Temperature July (7_temperature_2m_min)
+        6. Total Rainfall May (5_total_precipitation_sum)
+        7. Total Rainfall July (7_total_precipitation_sum)
+        8. Wind Speed May (5_v_component_of_wind_10m)
+        9. VPD May (5_vapor_pressure_deficit)
+        10. VPD June (6_vapor_pressure_deficit)
+        11. Sowing Date (DOY_min)
+        12. Cec (cec)
+        13. Clay (clay)
+        14. Sand (sand)
+        15. Silt (silt)
+        16. 2nd Week of July NDVI (193_NDVI)
+        17. 3rd Week of July NDVI (201_NDVI)
+        18. 4th Week of July NDVI (209_NDVI)
+        """)
 
 
 def prediction(input_data):
