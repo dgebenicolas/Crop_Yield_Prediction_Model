@@ -10,7 +10,7 @@ def setup_preprocessor(pre_process_df):
     global numeric_features, categorical_features, preprocessor, numeric_feature_names, categorical_feature_names
 
     # Define features
-    numeric_features = list(pre_process_df.drop(['Агрофон', 'Yield'], axis=1)
+    numeric_features = list(pre_process_df.drop(['Агрофон'], axis=1)
                            .select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон']
 
@@ -22,7 +22,7 @@ def setup_preprocessor(pre_process_df):
         ])
 
     # Fit preprocessor
-    preprocessor.fit(pre_process_df.drop('Yield', axis=1))
+    preprocessor.fit(pre_process_df)
 
     # Get feature names
     numeric_feature_names = numeric_features
@@ -39,9 +39,9 @@ def initialize_model():
     setup_preprocessor(pre_process_df)
     
     # Load model
-    lgbfit = lgb.Booster(model_file='C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit.txt')
+    lgbfit = lgb.Booster(model_file=r'C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit.txt')
     try:
-        with open('C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit_params.json', 'r') as f:
+        with open(r'C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit_params.json', 'r') as f:
             model_params = json.load(f)
     except Exception as e:
         print("Error Loading Parameters")
