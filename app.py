@@ -39,9 +39,9 @@ def initialize_model():
     setup_preprocessor(pre_process_df)
     
     # Load model
-    lgbfit = lgb.Booster(model_file=r'C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit.txt')
+    lgbfit = lgb.Booster(model_file=r'lgbfit.txt')
     try:
-        with open(r'C:\Users\Dgebe N\.cursor-tutor\projects\python\Field_Analysis\lgbfit_params.json', 'r') as f:
+        with open(r'lgbfit_params.json', 'r') as f:
             model_params = json.load(f)
     except Exception as e:
         print("Error Loading Parameters")
