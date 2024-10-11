@@ -6,7 +6,8 @@ import plotly.express as px
 import json
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
-    map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES
+    map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
+    process_data_yield
 )
 
 def load_model():
@@ -38,6 +39,12 @@ def main():
             return
         
         df = result  # result is the DataFrame if validation passed
+        has_yield = 'Yield' in df.columns
+        
+        if has_yield:
+            id_columns, process_df = process_data_yield(df)
+        else:
+            id_columns, process_df = process_data(df)
         
         # Process data
         id_columns, process_df = process_data(df)
@@ -154,6 +161,61 @@ def main():
             
         except Exception as e:
             st.error(f"Error creating map: {str(e)}")
+
+        if has_yield:
+            # Calculate residuals
+            results_df['Residuals'] = results_df['Yield'] - results_df['Predicted_Yield']
+            
+            # Add residuals visualization
+            st.subheader("Residuals Distribution")
+            fig_residuals = px.histogram(
+                results_df,
+                x='Residuals',
+                nbins=100,
+                title='Distribution of Residuals',
+                color_discrete_sequence=['#e74c3c'],
+                template='simple_white'
+            )
+            
+            mean_residual = results_df['Residuals'].mean()
+            std_residual = results_df['Residuals'].std()
+            mae_residual = np.abs(results_df['Residuals']).mean()
+            
+            fig_residuals.add_vline(x=mean_residual, line_dash="dash", line_color="red",
+                                   annotation_text=f"Mean: {mean_residual:.2f}")
+            fig_residuals.add_vline(x=mean_residual + std_residual, line_dash="dot", line_color="gray",
+                                   annotation_text=f"+1 Std: {std_residual:.2f}")
+            fig_residuals.add_vline(x=mean_residual - std_residual, line_dash="dot", line_color="gray",
+                                   annotation_text=f"-1 Std: {std_residual:.2f}")
+            
+            fig_residuals.update_layout(
+                xaxis_title="Residuals",
+                yaxis_title="Count",
+                annotations=[
+                    dict(x=0.95, y=1.05, xref="paper", yref="paper",
+                         text=f"MAE: {mae_residual:.2f}", showarrow=False)
+                ]
+            )
+            
+            st.plotly_chart(fig_residuals, use_container_width=True)
+            
+            # Update the predictions table to include Yield and Residuals
+            st.subheader("Predictions Table")
+            display_df = results_df.copy()
+            display_columns = ['Подразделение', 'Поле', 'Field_ID', 'Yield', 'Predicted_Yield', 'Residuals']
+            format_dict = {
+                'Yield': '{:.2f}',
+                'Predicted_Yield': '{:.2f}',
+                'Residuals': '{:.2f}'
+            }
+            
+            st.dataframe(
+                display_df[display_columns].style.format(format_dict),
+                height=400,
+                use_container_width=True
+            )
+
+
 
 if __name__ == '__main__':
     main()

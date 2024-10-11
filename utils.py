@@ -1,13 +1,10 @@
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-
 import pandas as pd
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 REQUIRED_COLUMNS = [
-    'Подразделение', 'Поле', 'Field_ID','Агрофон', 'MAX_NDVI', '7_NDVI', 
+    'Подразделение', 'Поле', 'Field_ID', 'Агрофон', 'MAX_NDVI', '7_NDVI', 
     '6_relative_humidity', '7_relative_humidity', '7_temperature_2m_min',
     '5_total_precipitation_sum', '7_total_precipitation_sum', 
     '5_v_component_of_wind_10m', '5_vapor_pressure_deficit', 
@@ -64,6 +61,21 @@ def process_data(df):
     id_columns = df[['Подразделение', 'Поле', 'Field_ID']].copy()
     
     # Drop ID columns and reorder remaining columns
+    process_cols = [col for col in REQUIRED_COLUMNS if col not in ['Подразделение', 'Поле', 'Field_ID']]
+    process_df = df[process_cols].copy()
+    
+    # Enforce data types
+    for col, dtype in COLUMN_DTYPES.items():
+        if col in process_df.columns:
+            process_df[col] = process_df[col].astype(dtype)
+    
+    return id_columns, process_df
+
+def process_data_yield(df):
+    # Store IDs and Yield before processing
+    id_columns = df[['Подразделение', 'Поле', 'Field_ID', 'Yield']].copy()
+    
+    # Drop ID columns and Yield, and reorder remaining columns
     process_cols = [col for col in REQUIRED_COLUMNS if col not in ['Подразделение', 'Поле', 'Field_ID']]
     process_df = df[process_cols].copy()
     
