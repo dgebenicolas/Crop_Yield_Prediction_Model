@@ -4,4 +4,3 @@ lightgbm
 streamlit
 scikit-learn
 plotly
-json
