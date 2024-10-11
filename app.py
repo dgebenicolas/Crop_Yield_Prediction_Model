@@ -4,6 +4,7 @@ import lightgbm as lgb
 import streamlit as st
 import plotly.express as px
 import json
+import os
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
@@ -20,6 +21,29 @@ def load_model():
 
 def main():
     st.title('Crop Yield Prediction')
+    st.markdown("""
+    <div style='background-color: #f0f2f6; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
+        <h3 style='margin-top: 0;'>Model Input Features:</h3>
+        <p><strong>Required columns for prediction:</strong></p>
+        <ul>
+            <li><strong>Field Information:</strong> Подразделение, Поле, Field_ID</li>
+            <li><strong>Vegetation Indices:</strong> MAX_NDVI, 7_NDVI, 193_NDVI, 201_NDVI, 209_NDVI</li>
+            <li><strong>Weather Data:</strong> 
+                <ul>
+                    <li>Humidity: 6_relative_humidity, 7_relative_humidity</li>
+                    <li>Temperature: 7_temperature_2m_min</li>
+                    <li>Precipitation: 5_total_precipitation_sum, 7_total_precipitation_sum</li>
+                    <li>Wind: 5_v_component_of_wind_10m</li>
+                    <li>Vapor Pressure: 5_vapor_pressure_deficit, 6_vapor_pressure_deficit</li>
+                </ul>
+            </li>
+            <li><strong>Soil Properties:</strong> cec, clay, sand, silt</li>
+            <li><strong>Temporal Information:</strong> DOY_min</li>
+            <li><strong>Agricultural Practice:</strong> Агрофон</li>
+        </ul>
+        <p><em>Optional: 'Yield' column for comparing predictions with actual yields</em></p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Load model and preprocessor
     model = load_model()
@@ -27,6 +51,12 @@ def main():
         return
     
     preprocessor, numeric_features, categorical_features = setup_preprocessor(None)
+    year = st.number_input("Enter the year for field boundaries:", 
+                          min_value=2020, 
+                          max_value=2030, 
+                          value=2024,
+                          step=1,
+                          help="Select the year for which you want to load field boundaries")
     
     # File uploader
     uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
@@ -127,7 +157,14 @@ def main():
         st.subheader("Predicted Yield Map")
         
         try:
-            with open('With_Holes_FIELDS_Geo_Boundaries__2024.geojson', 'r') as f:
+
+            geojson_filepath = f'With_Holes_FIELDS_Geo_Boundaries__{year}.geojson'
+            
+            if not os.path.exists(geojson_filepath):
+                st.error(f"Field boundaries data for year {year} not found. Please select a different year.")
+                return
+                
+            with open(geojson_filepath, 'r') as f:
                 geojson_data = json.load(f)
                 
             map_data = results_df.copy()
@@ -191,11 +228,11 @@ def main():
                 xaxis_title="Residuals",
                 yaxis_title="Count",
                 annotations=[
-                    dict(x=0.8, y=0.9, xref="paper", yref="paper",
+                    dict(x=1, y=0.9, xref="paper", yref="paper",
                         text=f"MAE: {mae_residual:.2f}", showarrow=False),
-                    dict(x=0.8, y=0.85, xref="paper", yref="paper",
+                    dict(x=1, y=0.85, xref="paper", yref="paper",
                         text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False),
-                    dict(x=0.8, y=0.8, xref="paper", yref="paper",
+                    dict(x=1, y=0.8, xref="paper", yref="paper",
                         text=f"Mean Actual: {mean_yield:.2f}", showarrow=False),
 
                 ]
