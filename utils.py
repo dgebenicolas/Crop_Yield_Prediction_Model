@@ -45,9 +45,14 @@ def check_csv_format(file):
         df = pd.read_csv(file)
     except Exception as e:
         return False, f"Error reading CSV file: {str(e)}"
+    required_cols = REQUIRED_COLUMNS.copy()
     
-    missing_cols = [col for col in REQUIRED_COLUMNS if col not in df.columns]
-    extra_cols = [col for col in df.columns if col not in REQUIRED_COLUMNS]
+    # Add Yield to required columns if it exists in the dataframe
+    if 'Yield' in df.columns:
+        required_cols.append('Yield')
+    
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    extra_cols = [col for col in df.columns if col not in required_cols]
     
     if missing_cols:
         return False, f"Missing columns: {', '.join(missing_cols)}"
