@@ -177,8 +177,10 @@ def main():
             mean_residual = results_df['Residuals'].mean()
             std_residual = results_df['Residuals'].std()
             mae_residual = np.abs(results_df['Residuals']).mean()
+            mean_predicted_yield = results_df['Predicted_Yield'].mean()
+            mean_yield = results_df['Yield'].mean()
             
-            fig_residuals.add_vline(x=mean_residual, line_dash="dash", line_color="red",
+            fig_residuals.add_vline(x=mean_residual, line_dash="dash", line_color="blue",
                                    annotation_text=f"Mean: {mean_residual:.2f}")
             fig_residuals.add_vline(x=mean_residual + std_residual, line_dash="dot", line_color="gray",
                                    annotation_text=f"+1 Std: {std_residual:.2f}")
@@ -189,8 +191,16 @@ def main():
                 xaxis_title="Residuals",
                 yaxis_title="Count",
                 annotations=[
-                    dict(x=0.95, y=1.05, xref="paper", yref="paper",
-                         text=f"MAE: {mae_residual:.2f}", showarrow=False)
+                    dict(x=0.8, y=1.05, xref="paper", yref="paper",
+                        text=f"MAE: {mae_residual:.2f}", showarrow=False),
+                    dict(x=0.8, y=1.00, xref="paper", yref="paper",
+                        text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False),
+                    dict(x=0.8, y=0.95, xref="paper", yref="paper",
+                        text=f"Mean Actual: {mean_yield:.2f}", showarrow=False),
+                    dict(x=0.8, y=0.90, xref="paper", yref="paper",
+                        text=f"Std Residual: {std_residual:.2f}", showarrow=False),
+                    dict(x=0.8, y=0.85, xref="paper", yref="paper",
+                        text=f"Mean Residual: {mean_residual:.2f}", showarrow=False)
                 ]
             )
             
