@@ -191,16 +191,13 @@ def main():
                 xaxis_title="Residuals",
                 yaxis_title="Count",
                 annotations=[
-                    dict(x=0.8, y=1.05, xref="paper", yref="paper",
+                    dict(x=0.8, y=0.9, xref="paper", yref="paper",
                         text=f"MAE: {mae_residual:.2f}", showarrow=False),
-                    dict(x=0.8, y=1.00, xref="paper", yref="paper",
-                        text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False),
-                    dict(x=0.8, y=0.95, xref="paper", yref="paper",
-                        text=f"Mean Actual: {mean_yield:.2f}", showarrow=False),
-                    dict(x=0.8, y=0.90, xref="paper", yref="paper",
-                        text=f"Std Residual: {std_residual:.2f}", showarrow=False),
                     dict(x=0.8, y=0.85, xref="paper", yref="paper",
-                        text=f"Mean Residual: {mean_residual:.2f}", showarrow=False)
+                        text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False),
+                    dict(x=0.8, y=0.8, xref="paper", yref="paper",
+                        text=f"Mean Actual: {mean_yield:.2f}", showarrow=False),
+
                 ]
             )
             
