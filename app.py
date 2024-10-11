@@ -46,9 +46,6 @@ def main():
         else:
             id_columns, process_df = process_data(df)
         
-        # Process data
-        id_columns, process_df = process_data(df)
-        
         # Map Agrofon to groups
         process_df = map_agrofon_to_group(process_df)
         
