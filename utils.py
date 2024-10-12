@@ -91,7 +91,7 @@ def process_data_yield(df):
     # Drop ID columns and Yield, and reorder remaining columns
     process_cols = [col for col in REQUIRED_COLUMNS if col not in ['Подразделение', 'Поле', 'Field_ID']]
     process_df = remove_outliers_iqr(df, 'Yield')
-    process_df = df[process_cols].copy()
+    process_df = process_df[process_cols].copy()
     
     # Enforce data types
     for col, dtype in COLUMN_DTYPES.items():
