@@ -74,7 +74,6 @@ def main():
         
         if has_yield:
             id_columns, process_df = process_data_yield(df)
-            process_df = remove_outliers_iqr(process_df, 'Yield')
         else:
             id_columns, process_df = process_data(df)
         
