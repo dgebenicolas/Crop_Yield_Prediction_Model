@@ -215,7 +215,7 @@ def main():
 
             # Create histogram trace
             hist_trace = go.Histogram(
-                x=results_df['Residuals'],
+                x=results_cleaned_df['Residuals'],
                 nbinsx=100,
                 name='Residuals',
                 marker_color='#e74c3c'
