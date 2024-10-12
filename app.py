@@ -74,6 +74,7 @@ def main():
         
         if has_yield:
             id_columns, process_df = process_data_yield(df)
+            process_df = remove_outliers_iqr(process_df, 'Yield')
         else:
             id_columns, process_df = process_data(df)
         
@@ -201,21 +202,20 @@ def main():
             # Calculate residuals
             # Assuming results_df is already defined and contains the necessary data
             results_df['Residuals'] = results_df['Yield'] - results_df['Predicted_Yield']
-            results_cleaned_df = results_df.copy()
-            results_cleaned_df = remove_outliers_iqr(results_cleaned_df, 'Residuals')
+
             # Add residuals visualization
             st.subheader("Residuals Distribution")
 
             # Calculate statistics
-            mean_residual = results_cleaned_df['Residuals'].mean()
-            std_residual = results_cleaned_df['Residuals'].std()
-            mae_residual = np.abs(results_cleaned_df['Residuals']).mean()
-            mean_predicted_yield = results_cleaned_df['Predicted_Yield'].mean()
-            mean_yield = results_cleaned_df['Yield'].mean()
+            mean_residual = results_df['Residuals'].mean()
+            std_residual = results_df['Residuals'].std()
+            mae_residual = np.abs(results_df['Residuals']).mean()
+            mean_predicted_yield = results_df['Predicted_Yield'].mean()
+            mean_yield = results_df['Yield'].mean()
 
             # Create histogram trace
             hist_trace = go.Histogram(
-                x=results_cleaned_df['Residuals'],
+                x=results_df['Residuals'],
                 nbinsx=100,
                 name='Residuals',
                 marker_color='#e74c3c'
