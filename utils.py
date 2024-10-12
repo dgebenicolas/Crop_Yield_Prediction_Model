@@ -86,12 +86,13 @@ def remove_outliers_iqr(df, column):
 
 def process_data_yield(df):
     # Store IDs and Yield before processing
-    id_columns = df[['Подразделение', 'Поле', 'Field_ID', 'Yield']].copy()
+    df_cleaned = df.copy()
+    df_cleaned = remove_outliers_iqr(df_cleaned, 'Yield')
+    id_columns = df_cleaned[['Подразделение', 'Поле', 'Field_ID', 'Yield']].copy()
     
     # Drop ID columns and Yield, and reorder remaining columns
     process_cols = [col for col in REQUIRED_COLUMNS if col not in ['Подразделение', 'Поле', 'Field_ID']]
-    process_df = remove_outliers_iqr(df, 'Yield')
-    process_df = process_df[process_cols].copy()
+    process_df = df_cleaned[process_cols].copy()
     
     # Enforce data types
     for col, dtype in COLUMN_DTYPES.items():
