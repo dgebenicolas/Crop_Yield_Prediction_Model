@@ -76,12 +76,21 @@ def process_data(df):
     
     return id_columns, process_df
 
+def remove_outliers_iqr(df, column):
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+
 def process_data_yield(df):
     # Store IDs and Yield before processing
     id_columns = df[['Подразделение', 'Поле', 'Field_ID', 'Yield']].copy()
     
     # Drop ID columns and Yield, and reorder remaining columns
     process_cols = [col for col in REQUIRED_COLUMNS if col not in ['Подразделение', 'Поле', 'Field_ID']]
+    process_df = remove_outliers_iqr(process_df, 'Yield')
     process_df = df[process_cols].copy()
     
     # Enforce data types
@@ -122,11 +131,3 @@ def map_agrofon_to_group(df):
     mapped_df['Агрофон'] = mapped_df['Агрофон'].apply(map_product_name)
     
     return mapped_df
-
-def remove_outliers_iqr(df, column):
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
