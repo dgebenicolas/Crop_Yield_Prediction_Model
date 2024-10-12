@@ -122,3 +122,11 @@ def map_agrofon_to_group(df):
     mapped_df['Агрофон'] = mapped_df['Агрофон'].apply(map_product_name)
     
     return mapped_df
+
+def remove_outliers_iqr(df, column):
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]

@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
-    process_data_yield
+    process_data_yield, remove_outliers_iqr
 )
 
 def load_model():
@@ -39,7 +39,7 @@ def main():
                 </ul>
             </li>
             <li><strong>Soil Properties:</strong> cec, clay, sand, silt</li>
-            <li><strong>Temporal Information:</strong> DOY_min</li>
+            <li><strong>Sowing Date:</strong> DOY_min</li>
             <li><strong>Agricultural Practice:</strong> Агрофон</li>
         </ul>
         <p><em>Optional: 'Yield' column for comparing predictions with actual yields</em></p>
@@ -201,16 +201,17 @@ def main():
             # Calculate residuals
             # Assuming results_df is already defined and contains the necessary data
             results_df['Residuals'] = results_df['Yield'] - results_df['Predicted_Yield']
-
+            results_cleaned_df = results_df.copy()
+            results_cleaned_df = remove_outliers_iqr(results_cleaned_df, 'Residuals')
             # Add residuals visualization
             st.subheader("Residuals Distribution")
 
             # Calculate statistics
-            mean_residual = results_df['Residuals'].mean()
-            std_residual = results_df['Residuals'].std()
-            mae_residual = np.abs(results_df['Residuals']).mean()
-            mean_predicted_yield = results_df['Predicted_Yield'].mean()
-            mean_yield = results_df['Yield'].mean()
+            mean_residual = results_cleaned_df['Residuals'].mean()
+            std_residual = results_cleaned_df['Residuals'].std()
+            mae_residual = np.abs(results_cleaned_df['Residuals']).mean()
+            mean_predicted_yield = results_cleaned_df['Predicted_Yield'].mean()
+            mean_yield = results_cleaned_df['Yield'].mean()
 
             # Create histogram trace
             hist_trace = go.Histogram(
