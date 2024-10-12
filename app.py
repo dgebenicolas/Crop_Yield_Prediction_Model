@@ -5,6 +5,7 @@ import streamlit as st
 import plotly.express as px
 import json
 import os
+import plotly.graph_objects as go
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
@@ -198,46 +199,60 @@ def main():
 
         if has_yield:
             # Calculate residuals
+            # Assuming results_df is already defined and contains the necessary data
             results_df['Residuals'] = results_df['Yield'] - results_df['Predicted_Yield']
-            
+
             # Add residuals visualization
             st.subheader("Residuals Distribution")
-            fig_residuals = px.histogram(
-                results_df,
-                x='Residuals',
-                nbins=100,
-                title='Distribution of Residuals',
-                color_discrete_sequence=['#e74c3c'],
-                template='simple_white'
-            )
-            
+
+            # Calculate statistics
             mean_residual = results_df['Residuals'].mean()
             std_residual = results_df['Residuals'].std()
             mae_residual = np.abs(results_df['Residuals']).mean()
             mean_predicted_yield = results_df['Predicted_Yield'].mean()
             mean_yield = results_df['Yield'].mean()
-            
-            fig_residuals.add_vline(x=mean_residual, line_dash="dash", line_color="blue",
-                                   annotation_text=f"Mean: {mean_residual:.2f}")
-            fig_residuals.add_vline(x=mean_residual + std_residual, line_dash="dot", line_color="gray",
-                                   annotation_text=f"+1 Std: {std_residual:.2f}")
-            fig_residuals.add_vline(x=mean_residual - std_residual, line_dash="dot", line_color="gray",
-                                   annotation_text=f"-1 Std: {std_residual:.2f}")
-            
-            fig_residuals.update_layout(
+
+            # Create histogram trace
+            hist_trace = go.Histogram(
+                x=results_df['Residuals'],
+                nbinsx=100,
+                name='Residuals',
+                marker_color='#e74c3c'
+            )
+
+            # Create layout
+            layout = go.Layout(
+                title='Distribution of Residuals',
                 xaxis_title="Residuals",
                 yaxis_title="Count",
+                template='simple_white',
+                showlegend=False,
                 annotations=[
-                    dict(x=1, y=0.9, xref="paper", yref="paper",
-                        text=f"MAE: {mae_residual:.2f}", showarrow=False),
-                    dict(x=1, y=0.85, xref="paper", yref="paper",
-                        text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False),
-                    dict(x=1, y=0.8, xref="paper", yref="paper",
-                        text=f"Mean Actual: {mean_yield:.2f}", showarrow=False),
-
+                    dict(x=0.95, y=0.95, xref="paper", yref="paper",
+                        text=f"Mean Residual: {mean_residual:.2f}", showarrow=False, align='left'),
+                    dict(x=0.95, y=0.90, xref="paper", yref="paper",
+                        text=f"Std Dev: {std_residual:.2f}", showarrow=False, align='left'),
+                    dict(x=0.95, y=0.85, xref="paper", yref="paper",
+                        text=f"MAE: {mae_residual:.2f}", showarrow=False, align='left'),
+                    dict(x=0.95, y=0.80, xref="paper", yref="paper",
+                        text=f"Mean Predicted: {mean_predicted_yield:.2f}", showarrow=False, align='left'),
+                    dict(x=0.95, y=0.75, xref="paper", yref="paper",
+                        text=f"Mean Actual: {mean_yield:.2f}", showarrow=False, align='left'),
                 ]
             )
-            
+
+            # Create figure
+            fig_residuals = go.Figure(data=[hist_trace], layout=layout)
+
+            # Add vertical lines
+            fig_residuals.add_vline(x=mean_residual, line_dash="dash", line_color="blue",
+                                    annotation_text="Mean", annotation_position="top left")
+            fig_residuals.add_vline(x=mean_residual + std_residual, line_dash="dot", line_color="gray",
+                                    annotation_text="+1 Std", annotation_position="top left")
+            fig_residuals.add_vline(x=mean_residual - std_residual, line_dash="dot", line_color="gray",
+                                    annotation_text="-1 Std", annotation_position="top left")
+
+            # Display the plot
             st.plotly_chart(fig_residuals, use_container_width=True)
             
             # Update the predictions table to include Yield and Residuals
