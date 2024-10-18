@@ -150,30 +150,30 @@ def rename_product_groups(df):
     """
     mapped_df = df.copy()
     
-    def map_product_name(product_name):
-        # Convert to lower case for case-insensitive matching
-        product_name = str(product_name).lower()
-        
-        # Dictionary of variety keywords and their standardized group names
-        variety_groups = {
-            'астана': 'Астана',
-            'шортандинская': 'Шортандинская',
-            'ликамеро': 'Ликамеро',
-            'тобольская': 'Тобольская',
-            'тризо': 'Тризо',
-            'радуга': 'Радуга',
-            'гранни': 'Гранни',
-            'урало-сибирская': 'Урало-Сибирская',
-            'уралосибирская': 'Урало-Сибирская',  # Handle variation in spelling
-            'айна': 'Айна'
-        }
-        
-        # Check for each variety keyword in the product name
-        for keyword, group in variety_groups.items():
-            if keyword in product_name:
-                return group
-                
-        return 'others'
+def map_product_name(product_name):
+    # Convert to lower case for case-insensitive matching
+    product_name = str(product_name).lower()
+    
+    # Dictionary of variety keywords and their standardized group names
+    variety_groups = {
+        'астана': 'Астана',
+        'шортандинская': 'Шортандинская',
+        'ликамеро': 'Ликамеро',
+        'тобольская': 'Тобольская',
+        'тризо': 'Тризо',
+        'радуга': 'Радуга',
+        'гранни': 'Гранни',
+        'урало-сибирская': 'Урало-Сибирская',
+        'уралосибирская': 'Урало-Сибирская',  # Handle variation in spelling
+        'айна': 'Айна'
+    }
+    
+    # Check for each variety keyword in the product name
+    for keyword, group in variety_groups.items():
+        if keyword in product_name:
+            return group
+            
+    return 'others'
     
     mapped_df['Product Group'] = mapped_df['Product Name'].apply(map_product_name)
     
