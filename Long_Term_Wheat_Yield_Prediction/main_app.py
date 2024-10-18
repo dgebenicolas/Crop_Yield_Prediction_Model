@@ -52,7 +52,7 @@ def main():
     model = load_model()
     if model is None:
         return
-    csv_path = os.path.join(current_dir, 'long_term_lgbm.txt')
+    csv_path = os.path.join(current_dir, 'long_term_test.csv')
     pre_process_df = pd.read_csv(csv_path)
     preprocessor, numeric_features, categorical_features = setup_preprocessor(pre_process_df)
     year = st.number_input("Enter the year for field boundaries:", 
