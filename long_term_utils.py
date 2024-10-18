@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+import os
 
 REQUIRED_COLUMNS = ['Подразделение', 'Поле',
        'Field_ID', 'Year', 'Агрофон',
@@ -23,7 +24,17 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    test_df = pd.read_csv(r'long_term_test.csv')
+    current_dir = os.path.dirname(os.path.abspath(__file__))  # Gets directory where utils.py is located
+    csv_path = os.path.join(current_dir, 'long_term_test.csv')
+    print(f"Utils directory: {current_dir}")
+    print(f"CSV path: {csv_path}")
+    print(f"File exists: {os.path.exists(csv_path)}")
+    
+    try:
+        test_df = pd.read_csv(csv_path)
+    except Exception as e:
+        print(f"Error reading CSV: {str(e)}")
+        raise
     numeric_features = list(test_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон', 'Культура']
 
