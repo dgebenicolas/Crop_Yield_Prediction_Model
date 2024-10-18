@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
-    process_data_yield, remove_outliers_iqr, map_product_name
+    process_data_yield, remove_outliers_iqr, rename_product_groups
 )
 
 def load_model():
