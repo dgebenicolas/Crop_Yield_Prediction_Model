@@ -23,7 +23,7 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    test_df = pd.read_csv('test.csv')
+    test_df = pd.read_csv('long_term_test.csv')
     numeric_features = list(test_df.drop(['Агрофон', 'Product Group'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон', 'Product Group']
 
