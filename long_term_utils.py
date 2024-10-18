@@ -25,7 +25,7 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    numeric_features = list(test_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
+    numeric_features = list(pre_process_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон', 'Культура']
 
     preprocessor = ColumnTransformer(
@@ -34,7 +34,7 @@ def setup_preprocessor(pre_process_df):
             ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
         ])
 
-    preprocessor.fit(test_df)
+    preprocessor.fit(pre_process_df)
     return preprocessor, numeric_features, categorical_features
 
 def check_csv_format(file):
@@ -176,6 +176,6 @@ def rename_product_groups(df):
                 
         return 'others'
     
-    mapped_df['Product Group'] = mapped_df['Product Name'].apply(map_product_name)
+    mapped_df['Культура'] = mapped_df['Культура'].apply(map_product_name)
     
     return mapped_df
