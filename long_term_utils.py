@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-import os
-import streamlit as st
+
+
 
 REQUIRED_COLUMNS = ['Подразделение', 'Поле',
        'Field_ID', 'Year', 'Агрофон',
@@ -25,28 +25,17 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    csv_path = os.path.join(root_dir, 'long_term_test.csv')
-        # Add Streamlit message for debugging
-    st.write(f"Attempting to read CSV from: {csv_path}")
-    try:
-        test_df = pd.read_csv(csv_path)
-        st.success("CSV loaded successfully!")  # This will show in the Streamlit UI
-        
-        numeric_features = list(test_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
-        categorical_features = ['Агрофон', 'Культура']
+    numeric_features = list(test_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
+    categorical_features = ['Агрофон', 'Культура']
 
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', StandardScaler(), numeric_features),
-                ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-            ])
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', StandardScaler(), numeric_features),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+        ])
 
-        preprocessor.fit(test_df)
-        return preprocessor, numeric_features, categorical_features
-    except Exception as e:
-        st.error(f"Error loading CSV: {str(e)}")  # This will show the error in Streamlit UI
-        raise
+    preprocessor.fit(test_df)
+    return preprocessor, numeric_features, categorical_features
 
 def check_csv_format(file):
     if not file.name.endswith('.csv'):
