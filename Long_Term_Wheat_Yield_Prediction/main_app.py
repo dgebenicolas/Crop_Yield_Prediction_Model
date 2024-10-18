@@ -9,12 +9,12 @@ import plotly.graph_objects as go
 from Crop_Yield_Prediction_Model.Short_Term_Wheat_Yield_Prediction.utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
-    process_data_yield, remove_outliers_iqr
+    process_data_yield, remove_outliers_iqr, map_product_name
 )
 
 def load_model():
     try:
-        model = lgb.Booster(model_file='lgbfit.txt')
+        model = lgb.Booster(model_file='long_term_lgbm.txt')
         return model
     except Exception as e:
         st.error(f"Error loading model: {str(e)}")
@@ -23,27 +23,26 @@ def load_model():
 def main():
     st.title('Crop Yield Prediction')
     st.markdown("""
-    <div style='background-color: #f0f2f6; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
-        <h3 style='margin-top: 0;'>Model Input Features:</h3>
-        <p><strong>Required columns for prediction:</strong></p>
-        <ul>
-            <li><strong>Field Information:</strong> Подразделение, Поле, Field_ID</li>
-            <li><strong>Vegetation Indices:</strong> MAX_NDVI, 7_NDVI, 193_NDVI, 201_NDVI, 209_NDVI</li>
-            <li><strong>Weather Data:</strong> 
-                <ul>
-                    <li>Humidity: 6_relative_humidity, 7_relative_humidity</li>
-                    <li>Temperature: 7_temperature_2m_min</li>
-                    <li>Precipitation: 5_total_precipitation_sum, 7_total_precipitation_sum</li>
-                    <li>Wind: 5_v_component_of_wind_10m</li>
-                    <li>Vapor Pressure: 5_vapor_pressure_deficit, 6_vapor_pressure_deficit</li>
-                </ul>
-            </li>
-            <li><strong>Soil Properties:</strong> cec, clay, sand, silt</li>
-            <li><strong>Sowing Date:</strong> DOY_min</li>
-            <li><strong>Agricultural Practice:</strong> Агрофон</li>
-        </ul>
-        <p><em>Optional: 'Yield' column for comparing predictions with actual yields</em></p>
-    </div>
+<div style='background-color: #f0f2f6; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
+    <h3 style='margin-top: 0;'>Model Input Features:</h3>
+    <p><strong>Required columns for prediction:</strong></p>
+    <ul>
+        <li><strong>Field Information:</strong> Подразделение, Поле, Field_ID</li>
+        <li><strong>Historical Yield Data:</strong> Previous_Years_Yield, Previous_Year_Mean_Region</li>
+        <li><strong>Fertilizer and Pesticide Usage:</strong> Macro Total/ha, Micro Total/ha, Fung Total/ha, Pest Total/ha</li>
+        <li><strong>Soil Properties:</strong> bdod, cec, clay, phh2o, sand, silt, soc</li>
+        <li><strong>Weather Data (May-August):</strong> 
+            <ul>
+                <li>Temperature: 5_temperature_2m, 6_temperature_2m, 7_temperature_2m, 8_temperature_2m</li>
+                <li>Precipitation: 5_total_precipitation_sum, 8_total_precipitation_sum</li>
+            </ul>
+        </li>
+        <li><strong>Agricultural Practice:</strong> Агрофон, Product Group</li>
+        <li><strong>Other:</strong> Year</li>
+    </ul>
+    <p><em>Optional: 'Yield' column for comparing predictions with actual yields</em></p>
+</div>
+
     """, unsafe_allow_html=True)
     
     # Load model and preprocessor
@@ -79,7 +78,7 @@ def main():
         
         # Map Agrofon to groups
         process_df = map_agrofon_to_group(process_df)
-        
+        process_df = map_product_name(process_df)
         # Preprocess data using fit_transform
         processed_data = preprocessor.transform(process_df)
         
