@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 REQUIRED_COLUMNS = [
     'Подразделение', 'Поле','Field_ID', 'Year', 'Yield', 'Агрофон',
        'Product Group', 'Previous_Years_Yield', 'Previous_Year_Mean_Region',
-       , 'Macro Total/ha', 'Micro Total/ha', 'Fung Total/ha', 'Pest Total/ha',
+        'Macro Total/ha', 'Micro Total/ha', 'Fung Total/ha', 'Pest Total/ha',
        'bdod', 'cec', 'clay', 'phh2o', 'sand', 'silt', 'soc',
        '5_temperature_2m', '6_temperature_2m', '7_temperature_2m',
        '8_temperature_2m', '5_total_precipitation_sum', '8_total_precipitation_sum'
