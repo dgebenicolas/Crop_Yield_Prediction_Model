@@ -14,9 +14,10 @@ from long_term_utils import (
     process_data_yield, remove_outliers_iqr, rename_product_groups
 )
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
 def load_model():
     try:
-        model = lgb.Booster(model_file='long_term_lgbm.txt')
+        model = lgb.Booster(model_file = os.path.join(current_dir, 'long_term_lgbm.txt'))
         return model
     except Exception as e:
         st.error(f"Error loading model: {str(e)}")
@@ -80,7 +81,7 @@ def main():
         
         # Map Agrofon to groups
         process_df = map_agrofon_to_group(process_df)
-        process_df = map_product_name(process_df)
+        process_df = rename_product_groups(process_df)
         # Preprocess data using fit_transform
         processed_data = preprocessor.transform(process_df)
         
@@ -160,7 +161,7 @@ def main():
         
         try:
 
-            geojson_filepath = f'With_Holes_FIELDS_Geo_Boundaries__{year}.geojson'
+            geojson_filepath = os.path.join(current_dir,f'With_Holes_FIELDS_Geo_Boundaries__{year}.geojson')
             
             if not os.path.exists(geojson_filepath):
                 st.error(f"Field boundaries data for year {year} not found. Please select a different year.")
