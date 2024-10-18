@@ -24,7 +24,7 @@ COLUMN_DTYPES = {
 
 def setup_preprocessor(pre_process_df):
     test_df = pd.read_csv('test.csv')
-    numeric_features = list(pre_process_df.drop(['Агрофон', 'Product Group'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
+    numeric_features = list(test_df.drop(['Агрофон', 'Product Group'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон', 'Product Group']
 
     preprocessor = ColumnTransformer(
