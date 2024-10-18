@@ -10,7 +10,7 @@ REQUIRED_COLUMNS = ['Подразделение', 'Поле',
        'Культура', 'Previous_Years_Yield', 'Previous_Year_Mean_Region',
         'Macro Total/ha', 'Micro Total/ha', 'Fung Total/ha', 'Pest Total/ha',
        'bdod', 'cec', 'clay', 'phh2o', 'sand', 'silt', 'soc',
-       '5_temperature_2m', '6_temperature_2m', '7_temperature_2m',
+       '5_temperature_2m', '6_temperature_2m',
        '8_temperature_2m', '5_total_precipitation_sum', '8_total_precipitation_sum'
 ]
 
@@ -20,7 +20,7 @@ COLUMN_DTYPES = {
     'Previous_Year_Mean_Region': 'float64', 'Macro Total/ha': 'float64', 'Micro Total/ha': 'float64', 
     'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64', 'cec': 'float64', 
     'clay': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'silt': 'float64', 'soc': 'float64', 
-    '5_temperature_2m': 'float64', '6_temperature_2m': 'float64', '7_temperature_2m': 'float64', 
+    '5_temperature_2m': 'float64', '6_temperature_2m': 'float64', 
     '8_temperature_2m': 'float64', '5_total_precipitation_sum': 'float64', '8_total_precipitation_sum': 'float64'
 }
 

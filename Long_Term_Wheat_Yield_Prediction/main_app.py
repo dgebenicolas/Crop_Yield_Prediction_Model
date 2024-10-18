@@ -90,7 +90,7 @@ def main():
         feature_names = (numeric_features + 
                         preprocessor.named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
-        
+        processed_df = processed_df.drop(columns=['Культура_others'])
         # Make predictions
         predictions = model.predict(processed_df)
         
