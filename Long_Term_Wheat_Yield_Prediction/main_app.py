@@ -6,7 +6,7 @@ import plotly.express as px
 import json
 import os
 import plotly.graph_objects as go
-from Crop_Yield_Prediction_Model.Long_Term_Wheat_Yield_Prediction.utils import (
+from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
     process_data_yield, remove_outliers_iqr, map_product_name
