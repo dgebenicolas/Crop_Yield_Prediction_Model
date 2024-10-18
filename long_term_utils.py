@@ -26,10 +26,6 @@ COLUMN_DTYPES = {
 def setup_preprocessor(pre_process_df):
     current_dir = os.path.dirname(os.path.abspath(__file__))  # Gets directory where utils.py is located
     csv_path = os.path.join(current_dir, 'long_term_test.csv')
-    print(f"Utils directory: {current_dir}")
-    print(f"CSV path: {csv_path}")
-    print(f"File exists: {os.path.exists(csv_path)}")
-    
     try:
         test_df = pd.read_csv(csv_path)
     except Exception as e:
