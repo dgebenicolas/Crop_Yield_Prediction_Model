@@ -3,9 +3,9 @@ import numpy as np
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-REQUIRED_COLUMNS = [
-    'Подразделение', 'Поле','Field_ID', 'Year', 'Yield', 'Агрофон',
-       'Product Group', 'Previous_Years_Yield', 'Previous_Year_Mean_Region',
+REQUIRED_COLUMNS = ['Подразделение', 'Поле',
+       'Field_ID', 'Year', 'Агрофон',
+       'Культура', 'Previous_Years_Yield', 'Previous_Year_Mean_Region',
         'Macro Total/ha', 'Micro Total/ha', 'Fung Total/ha', 'Pest Total/ha',
        'bdod', 'cec', 'clay', 'phh2o', 'sand', 'silt', 'soc',
        '5_temperature_2m', '6_temperature_2m', '7_temperature_2m',
@@ -13,8 +13,8 @@ REQUIRED_COLUMNS = [
 ]
 
 COLUMN_DTYPES = {
-    'Year': 'int64', 'Yield': 'float64', 
-    'Агрофон': 'object', 'Product Group': 'object', 'Previous_Years_Yield': 'float64', 
+    'Year': 'int64', 
+    'Агрофон': 'object', 'Культура': 'object', 'Previous_Years_Yield': 'float64', 
     'Previous_Year_Mean_Region': 'float64', 'Macro Total/ha': 'float64', 'Micro Total/ha': 'float64', 
     'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64', 'cec': 'float64', 
     'clay': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'silt': 'float64', 'soc': 'float64', 
@@ -23,9 +23,9 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    test_df = pd.read_csv('long_term_test.csv')
-    numeric_features = list(test_df.drop(['Агрофон', 'Product Group'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
-    categorical_features = ['Агрофон', 'Product Group']
+    test_df = pd.read_csv(r'long_term_test.csv')
+    numeric_features = list(test_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
+    categorical_features = ['Агрофон', 'Культура']
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -86,7 +86,7 @@ def remove_outliers_iqr(df, column):
 def process_data_yield(df):
     # Store IDs and Yield before processing
     df_cleaned = df.copy()
-    df_cleaned = remove_outliers_iqr(df_cleaned, 'Yield')
+    #df_cleaned = remove_outliers_iqr(df_cleaned, 'Yield')
     id_columns = df_cleaned[['Подразделение', 'Поле', 'Field_ID', 'Yield']].copy()
     
     # Drop ID columns and Yield, and reorder remaining columns
