@@ -4,3 +4,4 @@ lightgbm
 streamlit
 scikit-learn
 plotly
+scipy

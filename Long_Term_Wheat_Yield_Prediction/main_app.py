@@ -7,6 +7,7 @@ import json
 import sys
 import os
 import plotly.graph_objects as go
+from scipy.ndimage import gaussian_filter1d
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
