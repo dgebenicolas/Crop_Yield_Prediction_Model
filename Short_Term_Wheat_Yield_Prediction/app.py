@@ -5,16 +5,18 @@ import streamlit as st
 import plotly.express as px
 import json
 import os
+import sys
 import plotly.graph_objects as go
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
     process_data_yield, remove_outliers_iqr
 )
-
+current_dir = os.path.dirname(os.path.abspath(__file__))
 def load_model():
     try:
-        model = lgb.Booster(model_file='lgbfit.txt')
+        model = lgb.Booster(model_file = os.path.join(current_dir, 'lgbfit.txt'))
         return model
     except Exception as e:
         st.error(f"Error loading model: {str(e)}")
@@ -50,8 +52,9 @@ def main():
     model = load_model()
     if model is None:
         return
-    
-    preprocessor, numeric_features, categorical_features = setup_preprocessor(None)
+    csv_path = os.path.join(current_dir, 'test.csv')
+    pre_process_df = pd.read_csv(csv_path)
+    preprocessor, numeric_features, categorical_features = setup_preprocessor(pre_process_df)
     year = st.number_input("Enter the year for field boundaries:", 
                           min_value=2020, 
                           max_value=2030, 
@@ -159,7 +162,7 @@ def main():
         
         try:
 
-            geojson_filepath = f'With_Holes_FIELDS_Geo_Boundaries__{year}.geojson'
+            geojson_filepath = os.path.join(current_dir,f'With_Holes_FIELDS_Geo_Boundaries__{year}.geojson')
             
             if not os.path.exists(geojson_filepath):
                 st.error(f"Field boundaries data for year {year} not found. Please select a different year.")

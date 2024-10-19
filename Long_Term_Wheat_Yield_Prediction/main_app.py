@@ -125,37 +125,55 @@ def main():
                 }),
                 use_container_width=True
             )
-        
-        # Histogram
-        st.subheader("Prediction Distribution")
-        fig = px.histogram(
-            results_df, 
-            x='Predicted_Yield',
-            nbins=100,
-            title='Distribution of Predicted Yields',
-            color_discrete_sequence=['#3498db'],
-            template='simple_white'
-        )
-        
-        fig.update_layout(
-            xaxis_title="Predicted Yield",
-            yaxis_title="Count",
-            showlegend=False,
-            xaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
-            yaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
-            title=dict(font=dict(size=16))
-        )
-        
-        mean_yield = results_df['Predicted_Yield'].mean()
-        fig.add_vline(
-            x=mean_yield, 
-            line_dash="dash", 
-            line_color="red",
-            annotation_text=f"Mean: {mean_yield:.2f}",
-            annotation_position="top"
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        if has_yield:
+            st.subheader("Yield Distribution Comparison")
+            fig_kde = go.Figure()
+
+            # Create KDE plots
+            for col, name in [('Yield', 'Actual Yield'), ('Predicted_Yield', 'Predicted Yield')]:
+                density = sns.kdeplot(data=results_df[col])
+                line_data = density.get_lines()[0].get_data()
+                fig_kde.add_trace(go.Scatter(x=line_data[0], y=line_data[1], name=name, mode='lines'))
+                plt.close()
+
+            fig_kde.update_layout(
+                title='Distribution Comparison: Actual vs Predicted Yield',
+                xaxis_title='Yield',
+                yaxis_title='Density',
+                template='simple_white'
+            )
+
+            st.plotly_chart(fig_kde, use_container_width=True)
+        else:
+            st.subheader("Prediction Distribution")
+            fig = px.histogram(
+                results_df, 
+                x='Predicted_Yield',
+                nbins=100,
+                title='Distribution of Predicted Yields',
+                color_discrete_sequence=['#3498db'],
+                template='simple_white'
+            )
+            
+            fig.update_layout(
+                xaxis_title="Predicted Yield",
+                yaxis_title="Count",
+                showlegend=False,
+                xaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
+                yaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
+                title=dict(font=dict(size=16))
+            )
+            
+            mean_yield = results_df['Predicted_Yield'].mean()
+            fig.add_vline(
+                x=mean_yield, 
+                line_dash="dash", 
+                line_color="red",
+                annotation_text=f"Mean: {mean_yield:.2f}",
+                annotation_position="top"
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
         
         # Choropleth Map
         st.subheader("Predicted Yield Map")
