@@ -127,20 +127,26 @@ def main():
             )
         if has_yield:
             st.subheader("Yield Distribution Comparison")
-            fig_kde = go.Figure()
 
-            # Create KDE plots
-            for col, name in [('Yield', 'Actual Yield'), ('Predicted_Yield', 'Predicted Yield')]:
-                density = sns.kdeplot(data=results_df[col])
-                line_data = density.get_lines()[0].get_data()
-                fig_kde.add_trace(go.Scatter(x=line_data[0], y=line_data[1], name=name, mode='lines'))
-                plt.close()
+            # Create a long-format dataframe for the density plot
+            kde_df = pd.DataFrame({
+                'Value': pd.concat([results_df['Yield'], results_df['Predicted_Yield']]),
+                'Type': ['Actual Yield'] * len(results_df) + ['Predicted Yield'] * len(results_df)
+            })
+
+            fig_kde = px.histogram(
+                kde_df, 
+                x='Value', 
+                color='Type',
+                histnorm='probability density',
+                nbins=50,
+                title='Distribution Comparison: Actual vs Predicted Yield',
+                template='simple_white'
+            )
 
             fig_kde.update_layout(
-                title='Distribution Comparison: Actual vs Predicted Yield',
                 xaxis_title='Yield',
-                yaxis_title='Density',
-                template='simple_white'
+                yaxis_title='Density'
             )
 
             st.plotly_chart(fig_kde, use_container_width=True)
