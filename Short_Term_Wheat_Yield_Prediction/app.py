@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import plotly.graph_objects as go
+from scipy.stats import gaussian_kde
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from utils import (
     setup_preprocessor, check_csv_format, process_data, 
@@ -125,37 +126,58 @@ def main():
                 }),
                 use_container_width=True
             )
-        
-        # Histogram
-        st.subheader("Prediction Distribution")
-        fig = px.histogram(
-            results_df, 
-            x='Predicted_Yield',
-            nbins=100,
-            title='Distribution of Predicted Yields',
-            color_discrete_sequence=['#3498db'],
-            template='simple_white'
-        )
-        
-        fig.update_layout(
-            xaxis_title="Predicted Yield",
-            yaxis_title="Count",
-            showlegend=False,
-            xaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
-            yaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
-            title=dict(font=dict(size=16))
-        )
-        
-        mean_yield = results_df['Predicted_Yield'].mean()
-        fig.add_vline(
-            x=mean_yield, 
-            line_dash="dash", 
-            line_color="red",
-            annotation_text=f"Mean: {mean_yield:.2f}",
-            annotation_position="top"
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        if has_yield:
+            st.subheader("Yield Distribution Comparison")
+
+            fig_kde = go.Figure()
+            colors = ['rgba(31, 119, 180, {})', 'rgba(255, 127, 14, {})']
+
+            for idx, (col, label) in enumerate([('Yield', 'Actual Yield'), ('Predicted_Yield', 'Predicted Yield')]):
+                kde = gaussian_kde(results_df[col], bw_method='scott')
+                x_grid = np.linspace(results_df[col].min(), results_df[col].max(), 1000)
+                fig_kde.add_trace(go.Scatter(
+                    x=x_grid, y=kde(x_grid), name=label, mode='lines',
+                    line=dict(color=colors[idx].format(1)),
+                    fill='tozeroy', fillcolor=colors[idx].format(0.3)
+                ))
+
+            fig_kde.update_layout(
+                title='Distribution Comparison: Actual vs Predicted Yield',
+                xaxis_title='Yield', yaxis_title='Density', template='simple_white'
+            )
+
+            st.plotly_chart(fig_kde, use_container_width=True)
+        else:
+            # Histogram
+            st.subheader("Prediction Distribution")
+            fig = px.histogram(
+                results_df, 
+                x='Predicted_Yield',
+                nbins=100,
+                title='Distribution of Predicted Yields',
+                color_discrete_sequence=['#3498db'],
+                template='simple_white'
+            )
+            
+            fig.update_layout(
+                xaxis_title="Predicted Yield",
+                yaxis_title="Count",
+                showlegend=False,
+                xaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
+                yaxis=dict(tickfont=dict(size=12), titlefont=dict(size=14)),
+                title=dict(font=dict(size=16))
+            )
+            
+            mean_yield = results_df['Predicted_Yield'].mean()
+            fig.add_vline(
+                x=mean_yield, 
+                line_dash="dash", 
+                line_color="red",
+                annotation_text=f"Mean: {mean_yield:.2f}",
+                annotation_position="top"
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
         
         # Choropleth Map
         st.subheader("Predicted Yield Map")
@@ -171,8 +193,16 @@ def main():
             with open(geojson_filepath, 'r') as f:
                 geojson_data = json.load(f)
                 
-            map_data = results_df.copy()
+            selected_divisions = st.multiselect(
+                "Filter by Подразделение:",
+                options=sorted(results_df['Подразделение'].unique()),
+                default=sorted(results_df['Подразделение'].unique())
+            )
+
+            # Filter the data
+            map_data = results_df[results_df['Подразделение'].isin(selected_divisions)].copy()
             map_data = map_data[['Подразделение', 'Field_ID', 'Predicted_Yield']]
+            
             
             fig_map = px.choropleth_mapbox(
                 map_data, 
