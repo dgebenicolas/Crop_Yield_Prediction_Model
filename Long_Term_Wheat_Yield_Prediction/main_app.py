@@ -180,6 +180,12 @@ def main():
         
         # Choropleth Map
         st.subheader("Predicted Yield Map")
+        selected_divisions = st.multiselect(
+        "Filter by Подразделение:",
+        options=sorted(results_df['Подразделение'].unique()),
+        default=sorted(results_df['Подразделение'].unique())
+        )
+
         
         try:
 
