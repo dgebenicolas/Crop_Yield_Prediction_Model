@@ -23,8 +23,7 @@ COLUMN_DTYPES = {
 }
 
 def setup_preprocessor(pre_process_df):
-    test_df = pd.read_csv('test.csv')
-    numeric_features = list(test_df.drop(['Агрофон'], axis=1)
+    numeric_features = list(pre_process_df.drop(['Агрофон'], axis=1)
                            .select_dtypes(include=['int64', 'float64']).columns)
     categorical_features = ['Агрофон']
 
@@ -34,7 +33,7 @@ def setup_preprocessor(pre_process_df):
             ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
         ])
 
-    preprocessor.fit(test_df)
+    preprocessor.fit(pre_process_df)
     return preprocessor, numeric_features, categorical_features
 
 def check_csv_format(file):
