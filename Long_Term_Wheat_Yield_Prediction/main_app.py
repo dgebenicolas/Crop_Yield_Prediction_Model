@@ -179,14 +179,7 @@ def main():
             st.plotly_chart(fig, use_container_width=True)
         
         # Choropleth Map
-        st.subheader("Predicted Yield Map")
-        selected_divisions = st.multiselect(
-        "Filter by Подразделение:",
-        options=sorted(results_df['Подразделение'].unique()),
-        default=sorted(results_df['Подразделение'].unique())
-        )
-
-        
+        st.subheader("Predicted Yield Map")        
         try:
 
             geojson_filepath = os.path.join(current_dir,f'FIELDS_For_Climate_Clusters_{year}.geojson')
@@ -198,7 +191,14 @@ def main():
             with open(geojson_filepath, 'r') as f:
                 geojson_data = json.load(f)
                 
-            map_data = results_df.copy()
+            selected_divisions = st.multiselect(
+                "Filter by Подразделение:",
+                options=sorted(results_df['Подразделение'].unique()),
+                default=sorted(results_df['Подразделение'].unique())
+            )
+
+            # Filter the data
+            map_data = results_df[results_df['Подразделение'].isin(selected_divisions)].copy()
             map_data = map_data[['Подразделение', 'Field_ID', 'Predicted_Yield']]
             
             fig_map = px.choropleth_mapbox(
