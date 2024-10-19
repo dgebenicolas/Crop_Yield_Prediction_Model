@@ -7,7 +7,7 @@ import json
 import sys
 import os
 import plotly.graph_objects as go
-from scipy.ndimage import gaussian_filter1d
+from scipy.ndimage import gaussian_kde
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
@@ -129,39 +129,21 @@ def main():
         if has_yield:
             st.subheader("Yield Distribution Comparison")
 
-            # Calculate KDE for both distributions
-            x_range = np.linspace(
-                min(results_df['Yield'].min(), results_df['Predicted_Yield'].min()),
-                max(results_df['Yield'].max(), results_df['Predicted_Yield'].max()),
-                200
-            )
-
             fig_kde = go.Figure()
+            colors = ['rgba(31, 119, 180, {})', 'rgba(255, 127, 14, {})']
 
-            for col, name, color in [
-                ('Yield', 'Actual Yield', 'rgba(31, 119, 180, 0.3)'),
-                ('Predicted_Yield', 'Predicted Yield', 'rgba(255, 127, 14, 0.3)')
-            ]:
-                kde = np.histogram(results_df[col], bins=50, density=True)
-                y_smooth = gaussian_filter1d(kde[0], sigma=1)
-                x_smooth = (kde[1][:-1] + kde[1][1:]) / 2
-                
+            for idx, (col, label) in enumerate([('Yield', 'Actual Yield'), ('Predicted_Yield', 'Predicted Yield')]):
+                kde = gaussian_kde(results_df[col], bw_method='scott')
+                x_grid = np.linspace(results_df[col].min(), results_df[col].max(), 1000)
                 fig_kde.add_trace(go.Scatter(
-                    x=x_smooth,
-                    y=y_smooth,
-                    fill='tozeroy',
-                    fillcolor=color,
-                    line=dict(color=color.replace('0.3', '1')),
-                    name=name,
-                    mode='lines'
+                    x=x_grid, y=kde(x_grid), name=label, mode='lines',
+                    line=dict(color=colors[idx].format(1)),
+                    fill='tozeroy', fillcolor=colors[idx].format(0.3)
                 ))
 
             fig_kde.update_layout(
                 title='Distribution Comparison: Actual vs Predicted Yield',
-                xaxis_title='Yield',
-                yaxis_title='Density',
-                template='simple_white',
-                showlegend=True
+                xaxis_title='Yield', yaxis_title='Density', template='simple_white'
             )
 
             st.plotly_chart(fig_kde, use_container_width=True)
