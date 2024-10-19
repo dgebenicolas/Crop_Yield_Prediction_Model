@@ -128,25 +128,39 @@ def main():
         if has_yield:
             st.subheader("Yield Distribution Comparison")
 
-            # Create a long-format dataframe for the density plot
-            kde_df = pd.DataFrame({
-                'Value': pd.concat([results_df['Yield'], results_df['Predicted_Yield']]),
-                'Type': ['Actual Yield'] * len(results_df) + ['Predicted Yield'] * len(results_df)
-            })
-
-            fig_kde = px.histogram(
-                kde_df, 
-                x='Value', 
-                color='Type',
-                histnorm='probability density',
-                nbins=50,
-                title='Distribution Comparison: Actual vs Predicted Yield',
-                template='simple_white'
+            # Calculate KDE for both distributions
+            x_range = np.linspace(
+                min(results_df['Yield'].min(), results_df['Predicted_Yield'].min()),
+                max(results_df['Yield'].max(), results_df['Predicted_Yield'].max()),
+                200
             )
 
+            fig_kde = go.Figure()
+
+            for col, name, color in [
+                ('Yield', 'Actual Yield', 'rgba(31, 119, 180, 0.3)'),
+                ('Predicted_Yield', 'Predicted Yield', 'rgba(255, 127, 14, 0.3)')
+            ]:
+                kde = np.histogram(results_df[col], bins=50, density=True)
+                y_smooth = gaussian_filter1d(kde[0], sigma=1)
+                x_smooth = (kde[1][:-1] + kde[1][1:]) / 2
+                
+                fig_kde.add_trace(go.Scatter(
+                    x=x_smooth,
+                    y=y_smooth,
+                    fill='tozeroy',
+                    fillcolor=color,
+                    line=dict(color=color.replace('0.3', '1')),
+                    name=name,
+                    mode='lines'
+                ))
+
             fig_kde.update_layout(
+                title='Distribution Comparison: Actual vs Predicted Yield',
                 xaxis_title='Yield',
-                yaxis_title='Density'
+                yaxis_title='Density',
+                template='simple_white',
+                showlegend=True
             )
 
             st.plotly_chart(fig_kde, use_container_width=True)
