@@ -179,7 +179,7 @@ def main():
             geojson_filepath = os.path.join(current_dir,'All Fields Polygons.geojson')
             
             if not os.path.exists(geojson_filepath):
-                st.error(f"Field boundaries data for year {year} not found. Please select a different year.")
+                st.error(f"Missing GEOJSON")
                 return
                 
             with open(geojson_filepath, 'r') as f:
