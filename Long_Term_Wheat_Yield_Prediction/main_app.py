@@ -82,7 +82,7 @@ def main():
         feature_names = (numeric_features + 
                         preprocessor.named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
-        if 'Культура_others' in process_df.columns:
+        if 'Культура_others' in processed_df.columns:
             processed_df = processed_df.drop(columns=['Культура_others'])
         st.write("Column names:", processed_df.columns)
         # Make predictions
