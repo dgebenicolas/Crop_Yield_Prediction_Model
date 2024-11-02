@@ -84,7 +84,6 @@ def main():
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
         if 'Культура_others' in processed_df.columns:
             processed_df = processed_df.drop(columns=['Культура_others'])
-        st.write("Column names:", processed_df.columns)
         # Make predictions
         predictions = model.predict(processed_df)
         
@@ -92,33 +91,26 @@ def main():
         results_df = id_columns.copy()
         results_df['Predicted_Yield'] = predictions
         
-# Display results in two columns
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Predictions Table")
-            st.dataframe(
-                results_df.style.format({'Predicted_Yield': '{:.2f}'}),
-                height=400,  # Adjust height as needed
-                use_container_width=True
-            )
-        
-        with col2:
-            st.subheader("Summary Statistics")
-            stats_df = pd.DataFrame(results_df['Predicted_Yield'].describe())
-            stats_df.columns = ['Value']
-            stats_df['Value'] = stats_df['Value'].apply(lambda x: f'{x:.2f}')
-            
-            # Style the statistics table
-            st.dataframe(
-                stats_df.style.set_properties(**{
-                    'background-color': '#f0f2f6',
-                    'color': 'black',
-                    'border': '1px solid darkgrey',
-                    'padding': '12px'
-                }),
-                use_container_width=True
-            )
+
+        st.subheader("Predictions Table")
+        st.dataframe(
+            results_df.style.format({'Predicted_Yield': '{:.2f}'}),
+            height=400,  # Adjust height as needed
+            use_container_width=True
+        )
+
+        st.subheader('Yield Prediction By Farm')
+        farm_results = results_df.groupby('Подразделение').agg({
+            'Yield': 'mean',
+            'Predicted_Yield': 'mean'
+        }).reset_index()
+        st.dataframe(farm_results)
+
+        st.subheader('Summary Statistics')
+        summary_results = pd.DataFrame({'Mean': results_df[['Yield', 'Predicted_Yield']].mean(), 
+                                    'Std': results_df[['Yield', 'Predicted_Yield']].std()}).T
+        st.dataframe(summary_results)
+
         if has_yield:
             st.subheader("Yield Distribution Comparison")
 
@@ -277,22 +269,6 @@ def main():
 
             # Display the plot
             st.plotly_chart(fig_residuals, use_container_width=True)
-            
-            # Update the predictions table to include Yield and Residuals
-            st.subheader("Predictions Table")
-            display_df = results_df.copy()
-            display_columns = ['Подразделение', 'Поле', 'Field_ID', 'Yield', 'Predicted_Yield', 'Residuals']
-            format_dict = {
-                'Yield': '{:.2f}',
-                'Predicted_Yield': '{:.2f}',
-                'Residuals': '{:.2f}'
-            }
-            
-            st.dataframe(
-                display_df[display_columns].style.format(format_dict),
-                height=400,
-                use_container_width=True
-            )
 
 
 
