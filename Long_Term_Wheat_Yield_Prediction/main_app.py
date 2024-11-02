@@ -54,8 +54,7 @@ def main():
         return
     csv_path = os.path.join(current_dir, 'long_term_test.csv')
     pre_process_df = pd.read_csv(csv_path)
-    if pre_process_df is None:
-        return "Error pre process"
+    st.write("Column names:", pre_process_df.columns)
     preprocessor, numeric_features, categorical_features = setup_preprocessor(pre_process_df)
     
     # File uploader
