@@ -40,13 +40,13 @@ def main():
         </li>
         <li><strong>Weather Data (May-August):</strong>
             <ul>
-                <li>Relative Humidity: 5_relative_humidity, 6_relative_humidity, 7_relative_humidity, 8_relative_humidity</li>
-                <li>Solar Radiation: 5_surface_solar_radiation_downwards_sum, 6_surface_solar_radiation_downwards_sum, 7_surface_solar_radiation_downwards_sum, 8_surface_solar_radiation_downwards_sum</li>
-                <li>Max Temperature: 5_temperature_2m_max, 6_temperature_2m_max, 7_temperature_2m_max, 8_temperature_2m_max</li>
-                <li>Min Temperature: 5_temperature_2m_min, 6_temperature_2m_min, 7_temperature_2m_min, 8_temperature_2m_min</li>
-                <li>Total Precipitation: 5_total_precipitation_sum, 6_total_precipitation_sum, 7_total_precipitation_sum, 8_total_precipitation_sum</li>
-                <li>Wind Component (V): 5_v_component_of_wind_10m, 6_v_component_of_wind_10m, 7_v_component_of_wind_10m, 8_v_component_of_wind_10m</li>
-                <li>Vapor Pressure Deficit: 5_vapor_pressure_deficit, 6_vapor_pressure_deficit, 7_vapor_pressure_deficit, 8_vapor_pressure_deficit</li>
+                <li>Relative Humidity</li>
+                <li>Solar Radiation: </li>
+                <li>Max Temperature: </li>
+                <li>Min Temperature:</li>
+                <li>Total Precipitation: </li>
+                <li>Wind Component (V): </li>
+                <li>Vapor Pressure Deficit: </li>
             </ul>
         </li>
     </ul>
