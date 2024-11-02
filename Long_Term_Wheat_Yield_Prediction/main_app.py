@@ -130,8 +130,8 @@ def main():
                 help="Average absolute difference between actual and predicted yields By Farm"
             )
         with col2:
-            mean_yield = results_df['Yield'].mean()
-            mae = mean_absolute_error(results_df['Yield'], results_df['Predicted_Yield'])
+            mean_yield = farm_results['Yield'].mean()
+            mae = mean_absolute_error(farm_results['Yield'], farm_results['Predicted_Yield'])
             percentage_error = (mae / mean_yield) * 100
             st.metric(
                 label="Mean Absolute Percentage Error", 
