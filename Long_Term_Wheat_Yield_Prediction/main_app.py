@@ -84,6 +84,7 @@ def main():
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
         if 'Культура_others' in process_df.columns:
             processed_df = processed_df.drop(columns=['Культура_others'])
+        st.write("Column names:", processed_df.columns)
         # Make predictions
         predictions = model.predict(processed_df)
         
