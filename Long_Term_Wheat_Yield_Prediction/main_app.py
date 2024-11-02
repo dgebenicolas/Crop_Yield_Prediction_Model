@@ -11,8 +11,7 @@ from scipy.stats import gaussian_kde
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
-    map_agrofon_to_group, REQUIRED_COLUMNS, COLUMN_DTYPES,
-    process_data_yield, remove_outliers_iqr, rename_product_groups
+    map_agrofon_to_group, process_data_yield, rename_product_groups
 )
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -66,14 +65,12 @@ def main():
         if not is_valid:
             st.error(result)
             return
-        
-        df = result  # result is the DataFrame if validation passed
-        has_yield = 'Yield' in df.columns
+        has_yield = 'Yield' in result.columns
         
         if has_yield:
-            id_columns, process_df = process_data_yield(df)
+            id_columns, process_df = process_data_yield(result)
         else:
-            id_columns, process_df = process_data(df)
+            id_columns, process_df = process_data(result)
         
         # Map Agrofon to groups
         process_df = map_agrofon_to_group(process_df)
