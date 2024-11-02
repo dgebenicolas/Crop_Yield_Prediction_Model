@@ -120,6 +120,7 @@ def main():
         st.subheader('Yield Prediction By Farm')
         agg_columns = ['Predicted_Yield'] + (['Yield'] if 'Yield' in results_df.columns else [])
         farm_results = results_df.groupby('Подразделение')[agg_columns].mean().reset_index()
+        st.dataframe(farm_results)
 
         col1, col2 = st.columns(2)
         with col1:
