@@ -27,25 +27,32 @@ def load_model():
 def main():
     st.title('Crop Yield Prediction')
     st.markdown("""
-<div style='background-color: #f0f2f6; padding: 15px; border-radius: 5px; margin-bottom: 20px;'>
-    <h3 style='margin-top: 0;'>Model Input Features:</h3>
+<div style="background-color: #f0f2f6; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <h3 style="margin-top: 0;">Model Input Features:</h3>
     <p><strong>Required columns for prediction:</strong></p>
     <ul>
-        <li><strong>Field Information:</strong> Подразделение, Поле, Field_ID</li>
-        <li><strong>Historical Yield Data:</strong> Previous_Years_Yield, Previous_Year_Mean_Region</li>
-        <li><strong>Fertilizer and Pesticide Usage:</strong> Macro Total/ha, Micro Total/ha, Fung Total/ha, Pest Total/ha</li>
-        <li><strong>Soil Properties:</strong> bdod, cec, clay, phh2o, sand, silt, soc</li>
-        <li><strong>Weather Data (May-August):</strong> 
+        <li><strong>General Information:</strong> Year, Агрофон, Культура</li>
+        <li><strong>Fertilizer and Pesticide Application:</strong>
+            Macro Total/ha, Fung Total/ha, Pest Total/ha
+        </li>
+        <li><strong>Soil Properties:</strong>
+            bdod (bulk density), phh2o (soil pH), sand, silt, soc (soil organic carbon)
+        </li>
+        <li><strong>Weather Data (May-August):</strong>
             <ul>
-                <li>Temperature: 5_temperature_2m, 6_temperature_2m, 7_temperature_2m, 8_temperature_2m</li>
-                <li>Precipitation: 5_total_precipitation_sum, 8_total_precipitation_sum</li>
+                <li>Relative Humidity: 5_relative_humidity, 6_relative_humidity, 7_relative_humidity, 8_relative_humidity</li>
+                <li>Solar Radiation: 5_surface_solar_radiation_downwards_sum, 6_surface_solar_radiation_downwards_sum, 7_surface_solar_radiation_downwards_sum, 8_surface_solar_radiation_downwards_sum</li>
+                <li>Max Temperature: 5_temperature_2m_max, 6_temperature_2m_max, 7_temperature_2m_max, 8_temperature_2m_max</li>
+                <li>Min Temperature: 5_temperature_2m_min, 6_temperature_2m_min, 7_temperature_2m_min, 8_temperature_2m_min</li>
+                <li>Total Precipitation: 5_total_precipitation_sum, 6_total_precipitation_sum, 7_total_precipitation_sum, 8_total_precipitation_sum</li>
+                <li>Wind Component (V): 5_v_component_of_wind_10m, 6_v_component_of_wind_10m, 7_v_component_of_wind_10m, 8_v_component_of_wind_10m</li>
+                <li>Vapor Pressure Deficit: 5_vapor_pressure_deficit, 6_vapor_pressure_deficit, 7_vapor_pressure_deficit, 8_vapor_pressure_deficit</li>
             </ul>
         </li>
-        <li><strong>Agricultural Practice:</strong> Агрофон, Product Group</li>
-        <li><strong>Other:</strong> Year</li>
     </ul>
-    <p><em>Optional: 'Yield' column for comparing predictions with actual yields</em></p>
+    <p><em>Note: Optional 'Yield' column can be used to compare predicted vs. actual yields.</em></p>
 </div>
+
 
     """, unsafe_allow_html=True)
     
