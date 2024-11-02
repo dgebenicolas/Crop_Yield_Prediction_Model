@@ -109,18 +109,17 @@ def main():
                 help="Average absolute difference between actual and predicted yields By Farm"
             )
         with col2:
-            mape = np.mean(np.abs((results_df['Yield'] - results_df['Predicted_Yield']) / results_df['Yield'])) * 100
+            mean_yield = results_df['Yield'].mean()
+            mae = mean_absolute_error(results_df['Yield'], results_df['Predicted_Yield'])
+            percentage_error = (mae / mean_yield) * 100
             st.metric(
-                label="Mean Absolute Percentage Error (MAPE)", 
-                value=f"{mape:.1f}%",
-                help="Average percentage difference between actual and predicted yields By Farm"
+                label="Mean Absolute Percentage Error", 
+                value=f"{percentage_error:.1f}%",
+                help="MAE divided by mean yield - shows average error as percentage of mean yield"
             )
         st.subheader('Yield Prediction By Farm')
-        farm_results = results_df.groupby('Подразделение').agg({
-            'Yield': 'mean',
-            'Predicted_Yield': 'mean'
-        }).reset_index()
-        st.dataframe(farm_results)
+        agg_columns = ['Predicted_Yield'] + (['Yield'] if 'Yield' in results_df.columns else [])
+        farm_results = results_df.groupby('Подразделение')[agg_columns].mean().reset_index()
 
         col1, col2 = st.columns(2)
         with col1:
@@ -131,16 +130,17 @@ def main():
                 help="Average absolute difference between actual and predicted yields By Farm"
             )
         with col2:
-            mape = np.mean(np.abs((farm_results['Yield'] - farm_results['Predicted_Yield']) / farm_results['Yield'])) * 100
+            mean_yield = results_df['Yield'].mean()
+            mae = mean_absolute_error(results_df['Yield'], results_df['Predicted_Yield'])
+            percentage_error = (mae / mean_yield) * 100
             st.metric(
-                label="Mean Absolute Percentage Error (MAPE)", 
-                value=f"{mape:.1f}%",
-                help="Average percentage difference between actual and predicted yields By Farm"
-    )
-
+                label="Mean Absolute Percentage Error", 
+                value=f"{percentage_error:.1f}%",
+                help="MAE divided by mean yield - shows average error as percentage of mean yield by Farm"
+            )
         st.subheader('Summary Statistics')
-        summary_results = pd.DataFrame({'Mean': results_df[['Yield', 'Predicted_Yield']].mean(), 
-                                    'Std': results_df[['Yield', 'Predicted_Yield']].std()}).T
+        summary_results = pd.DataFrame({'Mean': results_df[agg_columns].mean(), 
+                                    'Std': results_df[agg_columns].std()}).T
         st.dataframe(summary_results)
 
         if has_yield:
