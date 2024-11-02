@@ -8,6 +8,7 @@ import sys
 import os
 import plotly.graph_objects as go
 from scipy.stats import gaussian_kde
+from sklearn.metrics import mean_absolute_error
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
@@ -99,12 +100,43 @@ def main():
             use_container_width=True
         )
 
+        col1, col2 = st.columns(2)
+        with col1:
+            mae = mean_absolute_error(results_df['Yield'], results_df['Predicted_Yield'])
+            st.metric(
+                label="Mean Absolute Error (MAE)", 
+                value=f"{mae:.2f} ц/га",
+                help="Average absolute difference between actual and predicted yields By Farm"
+            )
+        with col2:
+            mape = np.mean(np.abs((results_df['Yield'] - results_df['Predicted_Yield']) / results_df['Yield'])) * 100
+            st.metric(
+                label="Mean Absolute Percentage Error (MAPE)", 
+                value=f"{mape:.1f}%",
+                help="Average percentage difference between actual and predicted yields By Farm"
+            )
         st.subheader('Yield Prediction By Farm')
         farm_results = results_df.groupby('Подразделение').agg({
             'Yield': 'mean',
             'Predicted_Yield': 'mean'
         }).reset_index()
         st.dataframe(farm_results)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            mae = mean_absolute_error(farm_results['Yield'], farm_results['Predicted_Yield'])
+            st.metric(
+                label="Mean Absolute Error (MAE)", 
+                value=f"{mae:.2f} ц/га",
+                help="Average absolute difference between actual and predicted yields By Farm"
+            )
+        with col2:
+            mape = np.mean(np.abs((farm_results['Yield'] - farm_results['Predicted_Yield']) / farm_results['Yield'])) * 100
+            st.metric(
+                label="Mean Absolute Percentage Error (MAPE)", 
+                value=f"{mape:.1f}%",
+                help="Average percentage difference between actual and predicted yields By Farm"
+    )
 
         st.subheader('Summary Statistics')
         summary_results = pd.DataFrame({'Mean': results_df[['Yield', 'Predicted_Yield']].mean(), 
