@@ -5,24 +5,45 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 
 
-REQUIRED_COLUMNS = ['Подразделение', 'Поле',
-       'Field_ID', 'Year', 'Агрофон',
-       'Культура', 'Previous_Years_Yield', 'Previous_Year_Mean_Region',
-        'Macro Total/ha', 'Micro Total/ha', 'Fung Total/ha', 'Pest Total/ha',
-       'bdod', 'cec', 'clay', 'phh2o', 'sand', 'silt', 'soc',
-       '5_temperature_2m', '6_temperature_2m',
-       '8_temperature_2m', '5_total_precipitation_sum', '8_total_precipitation_sum'
+REQUIRED_COLUMNS = ['Подразделение', 'Поле', 'Field_ID', 'Year', 'Агрофон',
+       'Культура', 'Macro Total/ha', 'Fung Total/ha', 'Pest Total/ha', 'bdod',
+       'phh2o', 'sand', 'silt', 'soc', 'DOY_min', '5_relative_humidity',
+       '6_relative_humidity', '7_relative_humidity', '8_relative_humidity',
+       '5_surface_solar_radiation_downwards_sum',
+       '6_surface_solar_radiation_downwards_sum',
+       '7_surface_solar_radiation_downwards_sum',
+       '8_surface_solar_radiation_downwards_sum', '5_temperature_2m_max',
+       '6_temperature_2m_max', '7_temperature_2m_max', '8_temperature_2m_max',
+       '5_temperature_2m_min', '6_temperature_2m_min', '7_temperature_2m_min',
+       '8_temperature_2m_min', '5_total_precipitation_sum',
+       '6_total_precipitation_sum', '7_total_precipitation_sum',
+       '8_total_precipitation_sum', '5_v_component_of_wind_10m',
+       '6_v_component_of_wind_10m', '7_v_component_of_wind_10m',
+       '8_v_component_of_wind_10m', '5_vapor_pressure_deficit',
+       '6_vapor_pressure_deficit', '7_vapor_pressure_deficit',
+       '8_vapor_pressure_deficit'
 ]
 
 COLUMN_DTYPES = {
-    'Year': 'int64', 
-    'Агрофон': 'object', 'Культура': 'object', 'Previous_Years_Yield': 'float64', 
-    'Previous_Year_Mean_Region': 'float64', 'Macro Total/ha': 'float64', 'Micro Total/ha': 'float64', 
-    'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64', 'cec': 'float64', 
-    'clay': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'silt': 'float64', 'soc': 'float64', 
-    '5_temperature_2m': 'float64', '6_temperature_2m': 'float64', 
-    '8_temperature_2m': 'float64', '5_total_precipitation_sum': 'float64', '8_total_precipitation_sum': 'float64'
+    'Year': 'int64', 'Агрофон': 'object', 'Культура': 'object',
+    'Macro Total/ha': 'float64', 'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64',
+    'bdod': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'silt': 'float64', 'soc': 'float64',
+    'DOY_min': 'int64', '5_relative_humidity': 'float64', '6_relative_humidity': 'float64',
+    '7_relative_humidity': 'float64', '8_relative_humidity': 'float64',
+    '5_surface_solar_radiation_downwards_sum': 'float64', '6_surface_solar_radiation_downwards_sum': 'float64',
+    '7_surface_solar_radiation_downwards_sum': 'float64', '8_surface_solar_radiation_downwards_sum': 'float64',
+    '5_temperature_2m_max': 'float64', '6_temperature_2m_max': 'float64', '7_temperature_2m_max': 'float64',
+    '8_temperature_2m_max': 'float64', '5_temperature_2m_min': 'float64', '6_temperature_2m_min': 'float64',
+    '7_temperature_2m_min': 'float64', '8_temperature_2m_min': 'float64',
+    '5_total_precipitation_sum': 'float64', '6_total_precipitation_sum': 'float64',
+    '7_total_precipitation_sum': 'float64', '8_total_precipitation_sum': 'float64',
+    '5_v_component_of_wind_10m': 'float64', '6_v_component_of_wind_10m': 'float64',
+    '7_v_component_of_wind_10m': 'float64', '8_v_component_of_wind_10m': 'float64',
+    '5_vapor_pressure_deficit': 'float64', '6_vapor_pressure_deficit': 'float64',
+    '7_vapor_pressure_deficit': 'float64', '8_vapor_pressure_deficit': 'float64'
 }
+
+
 
 def setup_preprocessor(pre_process_df):
     numeric_features = list(pre_process_df.drop(['Агрофон', 'Культура'], axis=1).select_dtypes(include=['int64', 'float64']).columns)
