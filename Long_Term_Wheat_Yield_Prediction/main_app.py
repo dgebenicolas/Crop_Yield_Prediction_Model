@@ -54,7 +54,6 @@ def main():
         return
     csv_path = os.path.join(current_dir, 'long_term_test.csv')
     pre_process_df = pd.read_csv(csv_path)
-    st.write("Column names:", pre_process_df.columns)
     preprocessor, numeric_features, categorical_features = setup_preprocessor(pre_process_df)
     
     # File uploader
@@ -83,7 +82,6 @@ def main():
         feature_names = (numeric_features + 
                         preprocessor.named_transformers_['cat'].get_feature_names_out(categorical_features).tolist())
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
-        st.write("Column names:", processed_df.columns)
         if 'Культура_others' in process_df.columns:
             processed_df = processed_df.drop(columns=['Культура_others'])
         # Make predictions
