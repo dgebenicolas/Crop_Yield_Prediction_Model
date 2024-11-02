@@ -56,12 +56,6 @@ def main():
     csv_path = os.path.join(current_dir, 'long_term_test.csv')
     pre_process_df = pd.read_csv(csv_path)
     preprocessor, numeric_features, categorical_features = setup_preprocessor(pre_process_df)
-    year = st.number_input("Enter the year for field boundaries:", 
-                          min_value=2020, 
-                          max_value=2030, 
-                          value=2024,
-                          step=1,
-                          help="Select the year for which you want to load field boundaries")
     
     # File uploader
     uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
@@ -182,7 +176,7 @@ def main():
         st.subheader("Predicted Yield Map")        
         try:
 
-            geojson_filepath = os.path.join(current_dir,f'FIELDS_For_Climate_Clusters_{year}.geojson')
+            geojson_filepath = os.path.join(current_dir,'All Fields Polygons.geojson')
             
             if not os.path.exists(geojson_filepath):
                 st.error(f"Field boundaries data for year {year} not found. Please select a different year.")
