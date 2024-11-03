@@ -247,10 +247,12 @@ def main():
                 if config['crop_col']:
                     # Create single plot with all crops
                     fig_kde = go.Figure()
-                    colors = px.colors.qualitative.Set3  # Get a color palette
+                    # Define a color palette manually
+                    colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99', '#FF99CC', '#99FFCC', '#FFB366', '#FF99FF']
                     
                     for crop_idx, crop in enumerate(sorted(results_df[config['crop_col']].unique())):
                         crop_data = results_df[results_df[config['crop_col']] == crop]
+                        crop_color = colors[crop_idx % len(colors)]  # Cycle through colors if more crops than colors
                         
                         for col_idx, (col, label) in enumerate([
                             (config['yield_col'], 'Actual'),
@@ -267,11 +269,11 @@ def main():
                                 name=f'{crop} ({label})',
                                 mode='lines',
                                 line=dict(
-                                    color=colors[crop_idx],
+                                    color=crop_color,
                                     dash=line_style
                                 ),
                                 fill='tozeroy',
-                                fillcolor=f'rgba{tuple(list(px.colors.hex_to_rgb(colors[crop_idx])) + [0.1])}',
+                                fillcolor=f'rgba({int(crop_color[1:3], 16)}, {int(crop_color[3:5], 16)}, {int(crop_color[5:7], 16)}, 0.1)',
                             ))
                     
                     fig_kde.update_layout(
@@ -316,10 +318,11 @@ def main():
                 if config['crop_col']:
                     # Create single KDE plot for all crops
                     fig_kde = go.Figure()
-                    colors = px.colors.qualitative.Set3  # Get a color palette
+                    colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99', '#FF99CC', '#99FFCC', '#FFB366', '#FF99FF']
                     
                     for idx, crop in enumerate(sorted(results_df[config['crop_col']].unique())):
                         crop_data = results_df[results_df[config['crop_col']] == crop]
+                        crop_color = colors[idx % len(colors)]  # Cycle through colors if more crops than colors
                         kde = gaussian_kde(crop_data[config['pred_col']], bw_method='scott')
                         x_grid = np.linspace(crop_data[config['pred_col']].min(), 
                                         crop_data[config['pred_col']].max(), 1000)
@@ -328,9 +331,9 @@ def main():
                             x=x_grid, y=kde(x_grid),
                             name=crop,
                             mode='lines',
-                            line=dict(color=colors[idx]),
+                            line=dict(color=crop_color),
                             fill='tozeroy',
-                            fillcolor=f'rgba{tuple(list(px.colors.hex_to_rgb(colors[idx])) + [0.1])}',
+                            fillcolor=f'rgba({int(crop_color[1:3], 16)}, {int(crop_color[3:5], 16)}, {int(crop_color[5:7], 16)}, 0.1)',
                         ))
                     
                     fig_kde.update_layout(
@@ -362,15 +365,6 @@ def main():
                         fillcolor='rgba(31, 119, 180, 0.3)'
                     ))
                     
-                    # Add mean line
-                    mean_pred = results_df[config['pred_col']].mean()
-                    fig_kde.add_vline(
-                        x=mean_pred,
-                        line_dash="dash",
-                        line_color="red",
-                        annotation_text=f"Mean: {mean_pred:.2f}"
-                    )
-                    
                     fig_kde.update_layout(
                         title=f'Distribution of Predicted Values ({config["unit"]})',
                         xaxis_title=f'Value ({config["unit"]})',
@@ -378,7 +372,6 @@ def main():
                         template='simple_white'
                     )
                     st.plotly_chart(fig_kde, use_container_width=True)
-
         def display_choropleth_map(results_df, config):
             """Display choropleth map with additional crop filtering for other_crops"""
             st.subheader("Predicted Value Map")
