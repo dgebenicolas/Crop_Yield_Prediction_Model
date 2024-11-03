@@ -240,37 +240,53 @@ def main():
             st.dataframe(summary_results)
 
         def display_distribution_plots(results_df, config):
-            """Display distribution plots with crop-specific handling"""
+            """Display distribution plots with crop-specific handling and combined distributions"""
             if config['yield_col']:
                 st.subheader("Value Distribution Comparison")
                 
                 if config['crop_col']:
-                    # Create distribution plot for each crop
-                    for crop in results_df[config['crop_col']].unique():
+                    # Create single plot with all crops
+                    fig_kde = go.Figure()
+                    colors = px.colors.qualitative.Set3  # Get a color palette
+                    
+                    for crop_idx, crop in enumerate(sorted(results_df[config['crop_col']].unique())):
                         crop_data = results_df[results_df[config['crop_col']] == crop]
                         
-                        fig_kde = go.Figure()
-                        colors = ['rgba(31, 119, 180, {})', 'rgba(255, 127, 14, {})']
-                        
-                        for idx, (col, label) in enumerate([
-                            (config['yield_col'], 'Actual Value'),
-                            (config['pred_col'], 'Predicted Value')
+                        for col_idx, (col, label) in enumerate([
+                            (config['yield_col'], 'Actual'),
+                            (config['pred_col'], 'Predicted')
                         ]):
                             kde = gaussian_kde(crop_data[col], bw_method='scott')
                             x_grid = np.linspace(crop_data[col].min(), crop_data[col].max(), 1000)
+                            
+                            # Use different line styles for actual vs predicted
+                            line_style = 'solid' if col_idx == 0 else 'dash'
+                            
                             fig_kde.add_trace(go.Scatter(
-                                x=x_grid, y=kde(x_grid), name=label, mode='lines',
-                                line=dict(color=colors[idx].format(1)),
-                                fill='tozeroy', fillcolor=colors[idx].format(0.3)
+                                x=x_grid, y=kde(x_grid),
+                                name=f'{crop} ({label})',
+                                mode='lines',
+                                line=dict(
+                                    color=colors[crop_idx],
+                                    dash=line_style
+                                ),
+                                fill='tozeroy',
+                                fillcolor=f'rgba{tuple(list(px.colors.hex_to_rgb(colors[crop_idx])) + [0.1])}',
                             ))
-                        
-                        fig_kde.update_layout(
-                            title=f'Distribution Comparison for {crop} ({config["unit"]})',
-                            xaxis_title=f'Value ({config["unit"]})',
-                            yaxis_title='Density',
-                            template='simple_white'
+                    
+                    fig_kde.update_layout(
+                        title=f'Distribution Comparison by Crop ({config["unit"]})',
+                        xaxis_title=f'Value ({config["unit"]})',
+                        yaxis_title='Density',
+                        template='simple_white',
+                        legend=dict(
+                            yanchor="top",
+                            y=0.99,
+                            xanchor="right",
+                            x=0.99
                         )
-                        st.plotly_chart(fig_kde, use_container_width=True)
+                    )
+                    st.plotly_chart(fig_kde, use_container_width=True)
                 else:
                     # Original distribution plot code for non-crop cases
                     fig_kde = go.Figure()
@@ -298,31 +314,38 @@ def main():
             else:
                 st.subheader("Prediction Distribution")
                 if config['crop_col']:
-                    # Create KDE plot for each crop
-                    for crop in results_df[config['crop_col']].unique():
+                    # Create single KDE plot for all crops
+                    fig_kde = go.Figure()
+                    colors = px.colors.qualitative.Set3  # Get a color palette
+                    
+                    for idx, crop in enumerate(sorted(results_df[config['crop_col']].unique())):
                         crop_data = results_df[results_df[config['crop_col']] == crop]
-                        
-                        fig_kde = go.Figure()
                         kde = gaussian_kde(crop_data[config['pred_col']], bw_method='scott')
                         x_grid = np.linspace(crop_data[config['pred_col']].min(), 
                                         crop_data[config['pred_col']].max(), 1000)
                         
                         fig_kde.add_trace(go.Scatter(
                             x=x_grid, y=kde(x_grid),
-                            name=f'Predicted Value',
+                            name=crop,
                             mode='lines',
-                            line=dict(color='rgba(31, 119, 180, 1)'),
+                            line=dict(color=colors[idx]),
                             fill='tozeroy',
-                            fillcolor='rgba(31, 119, 180, 0.3)'
+                            fillcolor=f'rgba{tuple(list(px.colors.hex_to_rgb(colors[idx])) + [0.1])}',
                         ))
-                        
-                        fig_kde.update_layout(
-                            title=f'Distribution of Predicted Values for {crop} ({config["unit"]})',
-                            xaxis_title=f'Value ({config["unit"]})',
-                            yaxis_title='Density',
-                            template='simple_white'
+                    
+                    fig_kde.update_layout(
+                        title=f'Distribution of Predicted Values by Crop ({config["unit"]})',
+                        xaxis_title=f'Value ({config["unit"]})',
+                        yaxis_title='Density',
+                        template='simple_white',
+                        legend=dict(
+                            yanchor="top",
+                            y=0.99,
+                            xanchor="right",
+                            x=0.99
                         )
-                        st.plotly_chart(fig_kde, use_container_width=True)
+                    )
+                    st.plotly_chart(fig_kde, use_container_width=True)
                 else:
                     # Single KDE plot for all predictions
                     fig_kde = go.Figure()
@@ -338,6 +361,15 @@ def main():
                         fill='tozeroy',
                         fillcolor='rgba(31, 119, 180, 0.3)'
                     ))
+                    
+                    # Add mean line
+                    mean_pred = results_df[config['pred_col']].mean()
+                    fig_kde.add_vline(
+                        x=mean_pred,
+                        line_dash="dash",
+                        line_color="red",
+                        annotation_text=f"Mean: {mean_pred:.2f}"
+                    )
                     
                     fig_kde.update_layout(
                         title=f'Distribution of Predicted Values ({config["unit"]})',
