@@ -12,7 +12,7 @@ from sklearn.metrics import mean_absolute_error
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
-    map_agrofon_to_group, process_data_yield, rename_product_groups, predict_yields, process_data_other
+    map_agrofon_to_group, process_data_yield, rename_product_groups, predict_yields, process_data_other, map_crop_name
 )
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -126,6 +126,8 @@ def main():
             # Determine dataframe structure
             has_yield = 'Yield' in results_df.columns
             is_other_crops = model_type == 'other_crops'
+            if is_other_crops:
+                results_df = map_crop_name(results_df)
             
             # Configure visualization parameters based on model type
             viz_config = {
@@ -304,9 +306,7 @@ def main():
                                     title=f'Distribution of Predicted Values ({config["unit"]})',
                                     color_discrete_sequence=['#3498db'])
                     
-                    mean_pred = results_df[config['pred_col']].mean()
-                    fig.add_vline(x=mean_pred, line_dash="dash", line_color="red",
-                                annotation_text=f"Mean: {mean_pred:.2f}")
+
                 
                 st.plotly_chart(fig, use_container_width=True)
 
