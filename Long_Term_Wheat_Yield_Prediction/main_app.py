@@ -298,17 +298,54 @@ def main():
             else:
                 st.subheader("Prediction Distribution")
                 if config['crop_col']:
-                    fig = px.box(results_df, x=config['crop_col'], y=config['pred_col'],
-                                title=f'Distribution of Predicted Values by Crop ({config["unit"]})',
-                                color=config['crop_col'])
+                    # Create KDE plot for each crop
+                    for crop in results_df[config['crop_col']].unique():
+                        crop_data = results_df[results_df[config['crop_col']] == crop]
+                        
+                        fig_kde = go.Figure()
+                        kde = gaussian_kde(crop_data[config['pred_col']], bw_method='scott')
+                        x_grid = np.linspace(crop_data[config['pred_col']].min(), 
+                                        crop_data[config['pred_col']].max(), 1000)
+                        
+                        fig_kde.add_trace(go.Scatter(
+                            x=x_grid, y=kde(x_grid),
+                            name=f'Predicted Value',
+                            mode='lines',
+                            line=dict(color='rgba(31, 119, 180, 1)'),
+                            fill='tozeroy',
+                            fillcolor='rgba(31, 119, 180, 0.3)'
+                        ))
+                        
+                        fig_kde.update_layout(
+                            title=f'Distribution of Predicted Values for {crop} ({config["unit"]})',
+                            xaxis_title=f'Value ({config["unit"]})',
+                            yaxis_title='Density',
+                            template='simple_white'
+                        )
+                        st.plotly_chart(fig_kde, use_container_width=True)
                 else:
-                    fig = px.histogram(results_df, x=config['pred_col'],
-                                    title=f'Distribution of Predicted Values ({config["unit"]})',
-                                    color_discrete_sequence=['#3498db'])
+                    # Single KDE plot for all predictions
+                    fig_kde = go.Figure()
+                    kde = gaussian_kde(results_df[config['pred_col']], bw_method='scott')
+                    x_grid = np.linspace(results_df[config['pred_col']].min(), 
+                                    results_df[config['pred_col']].max(), 1000)
                     
-
-                
-                st.plotly_chart(fig, use_container_width=True)
+                    fig_kde.add_trace(go.Scatter(
+                        x=x_grid, y=kde(x_grid),
+                        name='Predicted Value',
+                        mode='lines',
+                        line=dict(color='rgba(31, 119, 180, 1)'),
+                        fill='tozeroy',
+                        fillcolor='rgba(31, 119, 180, 0.3)'
+                    ))
+                    
+                    fig_kde.update_layout(
+                        title=f'Distribution of Predicted Values ({config["unit"]})',
+                        xaxis_title=f'Value ({config["unit"]})',
+                        yaxis_title='Density',
+                        template='simple_white'
+                    )
+                    st.plotly_chart(fig_kde, use_container_width=True)
 
         def display_choropleth_map(results_df, config):
             """Display choropleth map with additional crop filtering for other_crops"""
