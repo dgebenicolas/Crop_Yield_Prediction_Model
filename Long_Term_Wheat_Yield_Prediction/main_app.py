@@ -10,11 +10,13 @@ import plotly.graph_objects as go
 from scipy.stats import gaussian_kde
 from sklearn.metrics import mean_absolute_error
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import importlib
+import long_term_utils
 from long_term_utils import (
     setup_preprocessor, check_csv_format, process_data, 
     map_agrofon_to_group, process_data_yield, rename_product_groups, predict_yields, process_data_other, map_crop_name
 )
-
+importlib.reload(long_term_utils)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 def load_model(model_type):
     """
