@@ -110,9 +110,8 @@ def main():
         if model_type == 'wheat':
             if has_yield:
                 id_columns, process_df = process_data_yield(result)
-                st.write(process_df.head(1))
                 result_df, error = predict_yields(id_columns, process_df, current_dir,  model, prep_path, model_type)
-                st.write(result.columns)
+    
             else:
                 id_columns, process_df = process_data(result)
                 result_df, error = predict_yields(id_columns, process_df, current_dir,  model, prep_path, model_type)
