@@ -3,6 +3,7 @@ import numpy as np
 import os
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+import streamlit as st
 
 
 
@@ -280,6 +281,7 @@ def predict_yields(id_columns, df, current_dir,  model, prep_path, model_type):
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
         if 'Культура_others' in processed_df.columns:
             processed_df = processed_df.drop(columns=['Культура_others', 'Культура_Ликамеро'])
+        st.write(processed_df)
         y_pred = model.predict(processed_df)
 
         results_df = id_columns.copy()
