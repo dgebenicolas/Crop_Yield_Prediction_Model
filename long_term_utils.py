@@ -7,7 +7,7 @@ import streamlit as st
 
 
 
-REQUIRED_COLUMNS = [
+REQUIRED_COLUMNS = ['Подразделение', 'Поле', 'Field_ID',
     'Year', 'Агрофон', 'Культура', 'Fung Total/ha', 'Pest Total/ha',
     'bdod', 'phh2o', 'sand', 'silt', 'soc', 'DOY_min', 'DOY_max',
     '5_relative_humidity', '6_relative_humidity', '7_relative_humidity', '8_relative_humidity',
