@@ -128,6 +128,9 @@ def main():
                 results_df (pd.DataFrame): Results dataframe
                 model_type (str): Type of model ('wheat' or 'other_crops')
             """
+            if results_df is None:
+                st.error("Error occurred during prediction. Unable to create visualizations.")
+            return
             # Determine dataframe structure
             has_yield = 'Yield' in results_df.columns
             is_other_crops = model_type == 'other_crops'
