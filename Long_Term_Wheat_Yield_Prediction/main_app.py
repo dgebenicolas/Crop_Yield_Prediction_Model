@@ -104,7 +104,6 @@ def main():
         if not is_valid:
             st.error(result)
             return
-        st.write(result.columns)
         has_yield = 'Yield' in result.columns
 
         if model_type == 'wheat':
