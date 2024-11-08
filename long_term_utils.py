@@ -280,7 +280,7 @@ def predict_yields(id_columns, df, current_dir,  model, prep_path, model_type):
         processed_data = preprocessor.transform(pre_process_df)
         processed_df = pd.DataFrame(processed_data, columns=feature_names)
         if 'Культура_others' in processed_df.columns:
-            processed_df = processed_df.drop(columns=['Культура_others', 'Культура_Ликамеро'])
+            processed_df = processed_df.drop(columns=['Культура_others'])
 
         y_pred = model.predict(processed_df)
 
