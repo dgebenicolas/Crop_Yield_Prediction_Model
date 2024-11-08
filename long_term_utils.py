@@ -7,9 +7,9 @@ import streamlit as st
 
 
 
-REQUIRED_COLUMNS = ['Подразделение', 'Поле', 'Field_ID',
-    'Year', 'Агрофон', 'Культура', 'Fung Total/ha', 'Pest Total/ha',
-    'bdod', 'phh2o', 'sand', 'silt', 'soc', 'DOY_min', 'DOY_max',
+REQUIRED_COLUMNS = [
+    'Area', 'Yield', 'Агрофон', 'Культура', 'Class', 'Fung Total/ha', 'Pest Total/ha',
+    'bdod', 'cec', 'clay', 'phh2o', 'sand', 'soc', 'DOY_min',
     '5_relative_humidity', '6_relative_humidity', '7_relative_humidity', '8_relative_humidity',
     '5_surface_solar_radiation_downwards_sum', '6_surface_solar_radiation_downwards_sum',
     '7_surface_solar_radiation_downwards_sum', '8_surface_solar_radiation_downwards_sum',
@@ -17,30 +17,30 @@ REQUIRED_COLUMNS = ['Подразделение', 'Поле', 'Field_ID',
     '5_temperature_2m_min', '6_temperature_2m_min', '7_temperature_2m_min', '8_temperature_2m_min',
     '5_total_precipitation_sum', '6_total_precipitation_sum', '7_total_precipitation_sum',
     '8_total_precipitation_sum', '5_v_component_of_wind_10m', '6_v_component_of_wind_10m',
-    '7_v_component_of_wind_10m', '8_v_component_of_wind_10m', '5_vapor_pressure_deficit',
-    '7_vapor_pressure_deficit', '8_vapor_pressure_deficit'
+    '7_v_component_of_wind_10m', '8_v_component_of_wind_10m',
+    '5_vapor_pressure_deficit', '6_vapor_pressure_deficit', '7_vapor_pressure_deficit',
+    '8_vapor_pressure_deficit'
 ]
 
 COLUMN_DTYPES = {
-    'Year': 'int64', 'Агрофон': 'object', 'Культура': 'object',
-    'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64',
-    'phh2o': 'float64', 'sand': 'float64', 'silt': 'float64', 'soc': 'float64',
-    'DOY_min': 'int64', 'DOY_max': 'int64',
-    '5_relative_humidity': 'float64', '6_relative_humidity': 'float64',
-    '7_relative_humidity': 'float64', '8_relative_humidity': 'float64',
+    'Area': 'float64', 'Yield': 'float64', 'Агрофон': 'object', 'Культура': 'object', 'Class': 'object',
+    'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64', 'cec': 'float64',
+    'clay': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'soc': 'float64', 'DOY_min': 'int64',
+    '5_relative_humidity': 'float64', '6_relative_humidity': 'float64', '7_relative_humidity': 'float64', 
+    '8_relative_humidity': 'float64',
     '5_surface_solar_radiation_downwards_sum': 'float64', '6_surface_solar_radiation_downwards_sum': 'float64',
     '7_surface_solar_radiation_downwards_sum': 'float64', '8_surface_solar_radiation_downwards_sum': 'float64',
-    '5_temperature_2m_max': 'float64', '6_temperature_2m_max': 'float64',
-    '7_temperature_2m_max': 'float64', '8_temperature_2m_max': 'float64',
-    '5_temperature_2m_min': 'float64', '6_temperature_2m_min': 'float64',
+    '5_temperature_2m_max': 'float64', '6_temperature_2m_max': 'float64', '7_temperature_2m_max': 'float64',
+    '8_temperature_2m_max': 'float64', '5_temperature_2m_min': 'float64', '6_temperature_2m_min': 'float64',
     '7_temperature_2m_min': 'float64', '8_temperature_2m_min': 'float64',
     '5_total_precipitation_sum': 'float64', '6_total_precipitation_sum': 'float64',
     '7_total_precipitation_sum': 'float64', '8_total_precipitation_sum': 'float64',
     '5_v_component_of_wind_10m': 'float64', '6_v_component_of_wind_10m': 'float64',
     '7_v_component_of_wind_10m': 'float64', '8_v_component_of_wind_10m': 'float64',
-    '5_vapor_pressure_deficit': 'float64', '7_vapor_pressure_deficit': 'float64',
-    '8_vapor_pressure_deficit': 'float64'
+    '5_vapor_pressure_deficit': 'float64', '6_vapor_pressure_deficit': 'float64',
+    '7_vapor_pressure_deficit': 'float64', '8_vapor_pressure_deficit': 'float64'
 }
+
 
 
 REQUIRED_COLUMNS_2 = ['Подразделение', 'Поле', 'Field_ID', 'Year', 'Агрофон', 'Культура', 'Fung Total/ha',
