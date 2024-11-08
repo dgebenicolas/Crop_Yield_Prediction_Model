@@ -8,7 +8,7 @@ import streamlit as st
 
 
 REQUIRED_COLUMNS = [
-    'Area', 'Yield', 'Агрофон', 'Культура', 'Class', 'Fung Total/ha', 'Pest Total/ha',
+    'Area', 'Агрофон', 'Культура', 'Class', 'Fung Total/ha', 'Pest Total/ha',
     'bdod', 'cec', 'clay', 'phh2o', 'sand', 'soc', 'DOY_min',
     '5_relative_humidity', '6_relative_humidity', '7_relative_humidity', '8_relative_humidity',
     '5_surface_solar_radiation_downwards_sum', '6_surface_solar_radiation_downwards_sum',
@@ -23,7 +23,7 @@ REQUIRED_COLUMNS = [
 ]
 
 COLUMN_DTYPES = {
-    'Area': 'float64', 'Yield': 'float64', 'Агрофон': 'object', 'Культура': 'object', 'Class': 'object',
+    'Area': 'float64', 'Агрофон': 'object', 'Культура': 'object', 'Class': 'object',
     'Fung Total/ha': 'float64', 'Pest Total/ha': 'float64', 'bdod': 'float64', 'cec': 'float64',
     'clay': 'float64', 'phh2o': 'float64', 'sand': 'float64', 'soc': 'float64', 'DOY_min': 'int64',
     '5_relative_humidity': 'float64', '6_relative_humidity': 'float64', '7_relative_humidity': 'float64', 
